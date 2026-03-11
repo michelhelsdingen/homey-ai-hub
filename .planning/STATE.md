@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: "2026-03-11T23:11:31.260Z"
+last_updated: "2026-03-11T23:27:26.637Z"
 progress:
-  total_phases: 3
-  completed_phases: 3
-  total_plans: 6
-  completed_plans: 6
+  total_phases: 4
+  completed_phases: 4
+  total_plans: 8
+  completed_plans: 8
 ---
 
 # Project State
@@ -18,16 +18,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-11)
 
 **Core value:** Users can leverage AI (Claude and Ollama) directly in Homey Flows without being locked into a single provider
-**Current focus:** Phase 3 IN PROGRESS — Vision Support (03-01 complete)
+**Current focus:** Phase 4 IN PROGRESS — App Store Polish (04-01 complete)
 
 ## Current Position
 
-Phase: 3 of 4 (Vision Support) — IN PROGRESS
-Plan: 1 of 1+ in current phase (Plan 03-01 COMPLETE)
-Status: 03-01 complete — provider layer and ask_ai_with_image Flow card delivered
-Last activity: 2026-03-12 — Completed plan 03-01 (Provider Layer and Flow Card for Vision Support)
+Phase: 4 of 4 (App Store Polish) — IN PROGRESS
+Plan: 1 of 2 in current phase (Plan 04-01 COMPLETE)
+Status: 04-01 complete — App Store manifest and assets delivered
+Last activity: 2026-03-12 — Completed plan 04-01 (App Store Manifest and Assets)
 
-Progress: [██████████████░░░░░░] 70% (phases 1-2 complete + 03-01 complete)
+Progress: [████████████████░░░░] 80% (phases 1-3 complete + 04-01 complete)
 
 ## Performance Metrics
 
@@ -49,6 +49,8 @@ Progress: [██████████████░░░░░░] 70% (ph
 - Trend: Consistent ~5-6 min/plan (03-01 slightly longer due to 8 new tests + 2 new provider methods)
 
 *Updated after each plan completion*
+| Phase 04-app-store-polish P01 | 5 | 2 tasks | 5 files |
+| Phase 04-app-store-polish P02 | 2 | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -81,6 +83,11 @@ Recent decisions affecting current work:
 - [03-01]: Ollama AsyncClient receives image_bytes directly as images=[bytes] — client handles base64 encoding internally
 - [03-01]: Droptoken stream shape is MEDIUM confidence (JS SDK only) — fallback AttributeError handler + self.log() diagnostics in image_run_listener
 - [03-01]: image/jpg normalised to image/jpeg in both ClaudeProvider and image_run_listener (belt-and-suspenders)
+- [Phase 04-app-store-polish]: version 1.0.0 — first public App Store release; brandColor #1a73e8; runtime python; platforms local; pythonVersion 3.14
+- [Phase 04-app-store-polish]: PNG generation uses Python struct/zlib standard library only — no external dependencies needed for solid-color promo images
+- [Phase 04-app-store-polish]: titleFormatted uses 'with [[model]]' syntax (no parentheses) per App Store guidelines
+- [Phase 04-app-store-polish]: env.json gitignored to prevent API keys from being committed
+- [Phase 04-app-store-polish]: list_models() failures return descriptive error response tokens instead of raising uncaught exceptions
 
 ### Pending Todos
 
@@ -96,5 +103,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-12
-Stopped at: Completed 03-01-PLAN.md — Provider Layer and Flow Card for Vision Support
+Stopped at: Completed 04-01-PLAN.md — App Store Manifest and Assets
 Resume file: None

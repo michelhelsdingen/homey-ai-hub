@@ -15,7 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 1: Core AI Integration** - Working Homey app with ask_ai Flow card routing to Claude or Ollama, model selection, settings, and connection validation
 - [x] **Phase 2: Conversation Memory and System Prompts** - Named conversation sessions with persistent history, sliding window, clear card, and system prompt configuration (completed 2026-03-11)
 - [x] **Phase 3: Vision Support** - Image-capable Flow card for vision models (Ollama qwen2.5vl, Claude 3+) — 03-01 complete 2026-03-12
-- [ ] **Phase 4: App Store Polish** - Submission-ready app with compliant card titles, localization, icon, and security audit
+- [x] **Phase 4: App Store Polish** - Submission-ready app with compliant card titles, localization, icon, and security audit (completed 2026-03-11)
 
 ## Phase Details
 
@@ -89,4 +89,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | 1. Core AI Integration | 3/3 | Complete | 2026-03-11 |
 | 2. Conversation Memory and System Prompts | 2/2 | Complete   | 2026-03-11 |
 | 3. Vision Support | 1/1 | Complete | 2026-03-12 |
-| 4. App Store Polish | 0/2 | Not started | - |
+| 4. App Store Polish | 2/2 | Complete   | 2026-03-11 |
