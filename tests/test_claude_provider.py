@@ -84,3 +84,71 @@ class TestClaudeProviderTestConnection:
 
         assert success is False
         assert "invalid" in message.lower() or "401" in message
+
+
+class TestClaudeProviderChatWithImage:
+    async def test_chat_with_image_returns_response_text(self, claude_provider):
+        mock_response = MagicMock()
+        mock_response.content = [MagicMock(text="The image shows a cat.")]
+
+        with patch.object(claude_provider._client.messages, "create", new_callable=AsyncMock) as mock_create:
+            mock_create.return_value = mock_response
+            result = await claude_provider.chat_with_image(
+                prompt="What is in this image?",
+                image_bytes=b"\xff\xd8\xff" + b"\x00" * 100,  # small JPEG-like bytes
+                media_type="image/jpeg",
+                model="claude-haiku-4-5",
+            )
+
+        assert isinstance(result, str)
+        assert result == "The image shows a cat."
+
+    async def test_chat_with_image_normalizes_jpg_media_type(self, claude_provider):
+        mock_response = MagicMock()
+        mock_response.content = [MagicMock(text="A photo.")]
+
+        captured_kwargs = {}
+
+        async def capture_create(**kwargs):
+            captured_kwargs.update(kwargs)
+            return mock_response
+
+        with patch.object(claude_provider._client.messages, "create", side_effect=capture_create):
+            await claude_provider.chat_with_image(
+                prompt="Describe this.",
+                image_bytes=b"\xff\xd8\xff" + b"\x00" * 50,
+                media_type="image/jpg",
+                model="claude-haiku-4-5",
+            )
+
+        # Verify the media_type was normalized to image/jpeg
+        messages = captured_kwargs.get("messages", [])
+        image_block = messages[0]["content"][0]
+        assert image_block["source"]["media_type"] == "image/jpeg"
+
+    async def test_chat_with_image_rejects_large_image(self, claude_provider):
+        large_bytes = b"\x00" * 5_000_001
+        result = await claude_provider.chat_with_image(
+            prompt="What is this?",
+            image_bytes=large_bytes,
+            media_type="image/jpeg",
+            model="claude-haiku-4-5",
+        )
+        assert result.startswith("Error:")
+        assert "5MB" in result
+
+    async def test_chat_with_image_returns_error_on_api_error(self, claude_provider):
+        from anthropic import APIStatusError
+        with patch.object(claude_provider._client.messages, "create", new_callable=AsyncMock) as mock_create:
+            mock_create.side_effect = APIStatusError(
+                message="bad request",
+                response=MagicMock(status_code=400, headers={}),
+                body={},
+            )
+            result = await claude_provider.chat_with_image(
+                prompt="Describe this.",
+                image_bytes=b"\xff\xd8\xff" + b"\x00" * 50,
+                media_type="image/jpeg",
+                model="claude-haiku-4-5",
+            )
+        assert result.startswith("Error:")

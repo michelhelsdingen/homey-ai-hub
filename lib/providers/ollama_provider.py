@@ -13,6 +13,7 @@ class OllamaProvider(LLMProvider):
 
     DEFAULT_HOST = "http://192.168.2.214:11434"
     DEFAULT_TIMEOUT = 120.0
+    VISION_MODELS = {"llava", "llava-phi3", "moondream", "qwen2.5vl", "llama3.2-vision", "bakllava", "minicpm-v"}
 
     def __init__(self, host: str = DEFAULT_HOST, timeout: float = DEFAULT_TIMEOUT) -> None:
         """Initialize with Ollama server URL and timeout.
@@ -40,6 +41,36 @@ class OllamaProvider(LLMProvider):
                 model=model,
                 messages=messages,
             )
+            return response.message.content
+        except ResponseError as e:
+            return f"Error: Ollama error: {e}"
+        except (ConnectionError, OSError) as e:
+            return f"Error: Cannot reach Ollama at {self._host}: {e}"
+        except Exception as e:
+            return f"Error: Unexpected Ollama error: {e}"
+
+    async def chat_with_image(
+        self,
+        prompt: str,
+        image_bytes: bytes,
+        media_type: str,
+        model: str,
+        timeout: float | None = None,
+        system_prompt: str | None = None,
+    ) -> str:
+        """Send a prompt + image to Ollama and return the response text."""
+        is_vision = any(model.startswith(vm) for vm in self.VISION_MODELS)
+        if not is_vision:
+            return (
+                f"Error: Model '{model}' does not support vision. "
+                "Use a vision model (e.g. llava, qwen2.5vl, llama3.2-vision)."
+            )
+        try:
+            messages = []
+            if system_prompt:
+                messages.append({"role": "system", "content": system_prompt})
+            messages.append({"role": "user", "content": prompt, "images": [image_bytes]})
+            response = await self._client.chat(model=model, messages=messages)
             return response.message.content
         except ResponseError as e:
             return f"Error: Ollama error: {e}"

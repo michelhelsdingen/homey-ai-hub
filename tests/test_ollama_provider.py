@@ -88,3 +88,65 @@ class TestOllamaProviderTestConnection:
 
         assert success is False
         assert "192.168.2.214" in message
+
+
+class TestOllamaProviderChatWithImage:
+    async def test_chat_with_image_returns_response_for_vision_model(self, ollama_provider):
+        mock_response = MagicMock()
+        mock_response.message.content = "I see a living room."
+
+        with patch.object(ollama_provider._client, "chat", new_callable=AsyncMock) as mock_chat:
+            mock_chat.return_value = mock_response
+            result = await ollama_provider.chat_with_image(
+                prompt="What is in this image?",
+                image_bytes=b"\xff\xd8\xff" + b"\x00" * 100,
+                media_type="image/jpeg",
+                model="llava:13b",
+            )
+
+        assert result == "I see a living room."
+
+    async def test_chat_with_image_rejects_non_vision_model(self, ollama_provider):
+        result = await ollama_provider.chat_with_image(
+            prompt="Describe this.",
+            image_bytes=b"\xff\xd8\xff" + b"\x00" * 50,
+            media_type="image/jpeg",
+            model="llama3.1:8b",
+        )
+        assert result.startswith("Error:")
+        assert "vision" in result.lower()
+
+    async def test_chat_with_image_passes_image_bytes_in_messages(self, ollama_provider):
+        mock_response = MagicMock()
+        mock_response.message.content = "Looks like a kitchen."
+
+        image_data = b"\xff\xd8\xff" + b"\x00" * 80
+        captured_kwargs = {}
+
+        async def capture_chat(**kwargs):
+            captured_kwargs.update(kwargs)
+            return mock_response
+
+        with patch.object(ollama_provider._client, "chat", side_effect=capture_chat):
+            await ollama_provider.chat_with_image(
+                prompt="What room is this?",
+                image_bytes=image_data,
+                media_type="image/jpeg",
+                model="llava:7b",
+            )
+
+        messages = captured_kwargs.get("messages", [])
+        user_message = next((m for m in messages if m.get("role") == "user"), None)
+        assert user_message is not None
+        assert user_message.get("images") == [image_data]
+
+    async def test_chat_with_image_returns_error_on_connection_failure(self, ollama_provider):
+        with patch.object(ollama_provider._client, "chat", new_callable=AsyncMock) as mock_chat:
+            mock_chat.side_effect = ConnectionError("Connection refused")
+            result = await ollama_provider.chat_with_image(
+                prompt="Describe this.",
+                image_bytes=b"\xff\xd8\xff" + b"\x00" * 50,
+                media_type="image/jpeg",
+                model="llava:13b",
+            )
+        assert result.startswith("Error:")

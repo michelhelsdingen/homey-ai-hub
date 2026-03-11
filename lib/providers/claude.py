@@ -1,4 +1,5 @@
 """Claude (Anthropic) provider implementation."""
+import base64
 import httpx
 from anthropic import AsyncAnthropic, APIConnectionError, RateLimitError, APIStatusError
 
@@ -42,6 +43,46 @@ class ClaudeProvider(LLMProvider):
             kwargs: dict = dict(model=model, max_tokens=1024, messages=messages)
             if system_prompt:
                 kwargs["system"] = system_prompt  # top-level param — NOT in messages array
+            response = await self._client.messages.create(**kwargs)
+            return response.content[0].text
+        except RateLimitError:
+            return "Error: Claude rate limited. Please wait 30 seconds and retry."
+        except APIConnectionError as e:
+            return f"Error: Cannot reach Claude API: {e}"
+        except APIStatusError as e:
+            return f"Error: Claude API error {e.status_code}: {e.message}"
+        except Exception as e:
+            return f"Error: Unexpected Claude error: {e}"
+
+    async def chat_with_image(
+        self,
+        prompt: str,
+        image_bytes: bytes,
+        media_type: str,
+        model: str,
+        timeout: float | None = None,
+        system_prompt: str | None = None,
+    ) -> str:
+        """Send a prompt + image to Claude and return the response text."""
+        if len(image_bytes) > 5_000_000:
+            return "Error: Image too large (>5MB). Use a lower-resolution snapshot."
+        # Normalize media type
+        if media_type == "image/jpg":
+            media_type = "image/jpeg"
+        try:
+            image_data = base64.standard_b64encode(image_bytes).decode("utf-8")
+            messages = [
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "image", "source": {"type": "base64", "media_type": media_type, "data": image_data}},
+                        {"type": "text", "text": prompt},
+                    ],
+                }
+            ]
+            kwargs: dict = dict(model=model, max_tokens=1024, messages=messages)
+            if system_prompt:
+                kwargs["system"] = system_prompt
             response = await self._client.messages.create(**kwargs)
             return response.content[0].text
         except RateLimitError:
