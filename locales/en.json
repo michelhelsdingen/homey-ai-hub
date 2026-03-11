@@ -1,1 +1,15 @@
-{}
+{
+  "app_settings_title": "Homey AI Hub Settings",
+  "setting_ollama_url": "Ollama URL",
+  "setting_ollama_url_hint": "e.g. http://192.168.2.214:11434",
+  "setting_claude_api_key": "Claude API Key",
+  "setting_claude_api_key_hint": "Starts with sk-ant-...",
+  "setting_default_provider": "Default Provider",
+  "setting_claude_timeout": "Claude Timeout (seconds)",
+  "setting_ollama_timeout": "Ollama Timeout (seconds)",
+  "test_claude_button": "Test Claude Connection",
+  "test_ollama_button": "Test Ollama Connection",
+  "connection_testing": "Testing...",
+  "connection_ok": "Connected",
+  "connection_failed": "Connection failed"
+}

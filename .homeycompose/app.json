@@ -12,7 +12,9 @@
   "category": [
     "tools"
   ],
-  "permissions": [],
+  "permissions": [
+    "homey:manager:flow"
+  ],
   "images": {
     "small": "/assets/images/small.png",
     "large": "/assets/images/large.png"

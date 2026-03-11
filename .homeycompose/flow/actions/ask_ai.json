@@ -1,0 +1,40 @@
+{
+  "id": "ask_ai",
+  "title": {
+    "en": "Ask AI"
+  },
+  "titleFormatted": {
+    "en": "Ask [[provider]] AI: [[prompt]]"
+  },
+  "args": [
+    {
+      "name": "prompt",
+      "type": "text",
+      "title": { "en": "Prompt" },
+      "placeholder": { "en": "What is the weather like today?" }
+    },
+    {
+      "name": "provider",
+      "type": "dropdown",
+      "title": { "en": "Provider" },
+      "values": [
+        { "id": "ollama", "label": { "en": "Ollama (local)" } },
+        { "id": "claude", "label": { "en": "Claude (cloud)" } }
+      ]
+    },
+    {
+      "name": "model",
+      "type": "autocomplete",
+      "title": { "en": "Model" },
+      "placeholder": { "en": "Select model..." }
+    }
+  ],
+  "tokens": [
+    {
+      "name": "response",
+      "type": "string",
+      "title": { "en": "AI Response" },
+      "example": { "en": "The weather today is 15°C and partly cloudy." }
+    }
+  ]
+}
