@@ -73,10 +73,11 @@ Plans:
   2. The app.json contains no API keys or credentials (env.json is empty or gitignored)
   3. The app installs cleanly on a fresh Homey Pro with no settings configured and shows actionable guidance instead of crashing
   4. The settings page, card titles, and app description are consistent English with no partial translations
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 04-01: App Store compliance audit and first-run hardening
+- [ ] 04-01-PLAN.md — Manifest compliance (brandColor, runtime, platforms, pythonVersion, version 1.0.0) and asset creation (icon.svg + 3 promo PNGs)
+- [ ] 04-02-PLAN.md — Flow card title fixes, env.json gitignore, locales completion, and list_models() hardening
 
 ## Progress
 
@@ -88,4 +89,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | 1. Core AI Integration | 3/3 | Complete | 2026-03-11 |
 | 2. Conversation Memory and System Prompts | 2/2 | Complete   | 2026-03-11 |
 | 3. Vision Support | 1/1 | Complete | 2026-03-12 |
-| 4. App Store Polish | 0/1 | Not started | - |
+| 4. App Store Polish | 0/2 | Not started | - |
