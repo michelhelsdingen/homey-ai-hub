@@ -1,0 +1,21 @@
+{
+  "id": "clear_conversation",
+  "title": { "en": "Clear conversation" },
+  "titleFormatted": { "en": "Clear conversation [[conversation_id]]" },
+  "args": [
+    {
+      "name": "conversation_id",
+      "type": "text",
+      "title": { "en": "Conversation ID" },
+      "placeholder": { "en": "my-morning-briefing" }
+    }
+  ],
+  "tokens": [
+    {
+      "name": "result",
+      "type": "string",
+      "title": { "en": "Result" },
+      "example": { "en": "Conversation cleared." }
+    }
+  ]
+}

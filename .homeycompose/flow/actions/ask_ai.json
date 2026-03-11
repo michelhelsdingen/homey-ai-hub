@@ -4,7 +4,7 @@
     "en": "Ask AI"
   },
   "titleFormatted": {
-    "en": "Ask [[provider]] AI: [[prompt]]"
+    "en": "Ask [[provider]] AI ([[model]]): [[prompt]]"
   },
   "args": [
     {
@@ -27,6 +27,20 @@
       "type": "autocomplete",
       "title": { "en": "Model" },
       "placeholder": { "en": "Select model..." }
+    },
+    {
+      "name": "conversation_id",
+      "type": "text",
+      "required": false,
+      "title": { "en": "Conversation ID" },
+      "placeholder": { "en": "Leave empty for single-turn" }
+    },
+    {
+      "name": "system_prompt",
+      "type": "text",
+      "required": false,
+      "title": { "en": "System Prompt (optional)" },
+      "placeholder": { "en": "You are a helpful assistant for my smart home." }
     }
   ],
   "tokens": [
