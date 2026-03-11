@@ -18,16 +18,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-11)
 
 **Core value:** Users can leverage AI (Claude and Ollama) directly in Homey Flows without being locked into a single provider
-**Current focus:** Phase 4 IN PROGRESS — App Store Polish (04-01 complete)
+**Current focus:** Phase 4 COMPLETE — App Store Polish (04-01 and 04-02 complete)
 
 ## Current Position
 
-Phase: 4 of 4 (App Store Polish) — IN PROGRESS
-Plan: 1 of 2 in current phase (Plan 04-01 COMPLETE)
-Status: 04-01 complete — App Store manifest and assets delivered
-Last activity: 2026-03-12 — Completed plan 04-01 (App Store Manifest and Assets)
+Phase: 4 of 4 (App Store Polish) — COMPLETE
+Plan: 2 of 2 in current phase (Plan 04-02 COMPLETE)
+Status: 04-02 complete — Flow card compliance, .gitignore security, locales, and error hardening delivered
+Last activity: 2026-03-12 — Completed plan 04-02 (App Store Compliance Fixes)
 
-Progress: [████████████████░░░░] 80% (phases 1-3 complete + 04-01 complete)
+Progress: [████████████████████] 100% (all phases complete)
 
 ## Performance Metrics
 
@@ -103,5 +103,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-12
-Stopped at: Completed 04-01-PLAN.md — App Store Manifest and Assets
+Stopped at: Completed 04-02-PLAN.md — App Store Compliance Fixes
 Resume file: None
