@@ -4,12 +4,15 @@ from homey.flow_card import ArgumentAutocompleteResult
 
 from lib.providers.claude import ClaudeProvider
 from lib.providers.ollama_provider import OllamaProvider
+from lib.conversation_store import ConversationStore
 
 
 class App(homey_app.App):
     async def on_init(self) -> None:
         self.log("Homey AI Hub starting...")
         self._providers: dict = {}
+        max_turns = int(self.homey.settings.get("max_history_turns") or 10)
+        self._store = ConversationStore(settings=self.homey.settings, max_turns=max_turns)
         await self._init_providers()
         await self._register_flow_cards()
         self.log("Homey AI Hub ready.")
@@ -79,7 +82,7 @@ class App(homey_app.App):
             if not prompt:
                 return {"response": "Error: No prompt provided."}
 
-            # Extract model from autocomplete result (dict) or string
+            # Extract model (handles autocomplete dict or plain string)
             model_arg = args.get("model")
             if isinstance(model_arg, dict):
                 model = model_arg.get("name") or model_arg.get("id") or ""
@@ -87,19 +90,45 @@ class App(homey_app.App):
                 model = str(model_arg) if model_arg else ""
 
             if not model:
-                # Fall back to first available model
                 models = await provider.list_models()
                 model = models[0] if models else ""
 
             if not model:
                 return {"response": f"Error: No model selected and no models available for {name}."}
 
-            self.log(f"ask_ai: provider={name}, model={model}, prompt_len={len(prompt)}")
+            # Optional conversation session
+            conversation_id = (args.get("conversation_id") or "").strip()
+
+            # System prompt precedence: per-card > global setting > None
+            per_card_system = (args.get("system_prompt") or "").strip()
+            global_system = (self.homey.settings.get("global_system_prompt") or "").strip()
+            effective_system = per_card_system or global_system or None
+
+            # Build message list (with history if using a named session)
+            if conversation_id:
+                history = self._store.get(conversation_id)
+                messages = list(history) + [{"role": "user", "content": prompt}]
+            else:
+                messages = [{"role": "user", "content": prompt}]
+
+            self.log(
+                f"ask_ai: provider={name}, model={model}, "
+                f"prompt_len={len(prompt)}, "
+                f"conv_id={conversation_id or 'none'}, "
+                f"system_prompt={'yes' if effective_system else 'no'}"
+            )
 
             response = await provider.chat(
-                messages=[{"role": "user", "content": prompt}],
+                messages=messages,
                 model=model,
+                system_prompt=effective_system,
             )
+
+            # Persist turn ONLY after successful API call (not if response starts with "Error:")
+            if conversation_id and not response.startswith("Error:"):
+                self._store.append(conversation_id, "user", prompt)
+                self._store.append(conversation_id, "assistant", response)
+
             return {"response": response}
 
         ask_card.register_run_listener(run_listener)
@@ -122,6 +151,18 @@ class App(homey_app.App):
             return results
 
         ask_card.register_argument_autocomplete_listener("model", model_autocomplete)
+
+        clear_card = self.homey.flow.get_action_card("clear_conversation")
+
+        async def clear_run_listener(args: dict, **kwargs) -> dict:
+            conversation_id = (args.get("conversation_id") or "").strip()
+            if not conversation_id:
+                return {"result": "Error: No conversation ID provided."}
+            self._store.clear(conversation_id)
+            self.log(f"clear_conversation: cleared '{conversation_id}'")
+            return {"result": f"Conversation '{conversation_id}' cleared."}
+
+        clear_card.register_run_listener(clear_run_listener)
 
 
 homey_export = App
