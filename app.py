@@ -90,8 +90,11 @@ class App(homey_app.App):
                 model = str(model_arg) if model_arg else ""
 
             if not model:
-                models = await provider.list_models()
-                model = models[0] if models else ""
+                try:
+                    models = await provider.list_models()
+                    model = models[0] if models else ""
+                except Exception as e:
+                    return {"response": f"Error: Could not fetch models for {name}: {e}"}
 
             if not model:
                 return {"response": f"Error: No model selected and no models available for {name}."}
@@ -194,8 +197,11 @@ class App(homey_app.App):
                 model = str(model_arg) if model_arg else ""
 
             if not model:
-                models = await provider.list_models()
-                model = models[0] if models else ""
+                try:
+                    models = await provider.list_models()
+                    model = models[0] if models else ""
+                except Exception as e:
+                    return {"response": f"Error: Could not fetch models for {name}: {e}"}
 
             if not model:
                 return {"response": f"Error: No model selected and no models available for {name}."}
