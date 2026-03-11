@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Homey AI Hub Settings</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; padding: 20px; max-width: 600px; }
+    .section { margin-bottom: 24px; padding: 16px; border: 1px solid #e0e0e0; border-radius: 8px; }
+    .section h2 { margin: 0 0 12px; font-size: 16px; color: #333; }
+    label { display: block; font-size: 13px; color: #555; margin-bottom: 4px; margin-top: 12px; }
+    input, select { width: 100%; padding: 8px 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; box-sizing: border-box; }
+    .hint { font-size: 11px; color: #888; margin-top: 2px; }
+    button { margin-top: 12px; padding: 8px 16px; background: #1a73e8; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; }
+    button:hover { background: #1557b0; }
+    .status { margin-top: 8px; font-size: 13px; padding: 6px 10px; border-radius: 4px; }
+    .status.ok { background: #e6f4ea; color: #1e8e3e; }
+    .status.fail { background: #fce8e6; color: #d93025; }
+    .status.testing { background: #fef7e0; color: #b06000; }
+    .save-btn { background: #34a853; }
+    .save-btn:hover { background: #2d8f46; }
+  </style>
+</head>
+<body>
+
+<div class="section">
+  <h2>Ollama (Local AI)</h2>
+  <label for="ollama_url">Ollama URL</label>
+  <input type="text" id="ollama_url" placeholder="http://192.168.2.214:11434">
+  <p class="hint">IP address and port of your Ollama server</p>
+
+  <label for="ollama_timeout">Timeout (seconds)</label>
+  <input type="number" id="ollama_timeout" placeholder="120" min="10" max="600">
+  <p class="hint">Default: 120s — allow extra time for cold model loading</p>
+
+  <button onclick="testOllama()">Test Ollama Connection</button>
+  <div id="ollama_status" class="status" style="display:none"></div>
+</div>
+
+<div class="section">
+  <h2>Claude (Anthropic)</h2>
+  <label for="claude_api_key">API Key</label>
+  <input type="password" id="claude_api_key" placeholder="sk-ant-...">
+  <p class="hint">Get your key at console.anthropic.com</p>
+
+  <label for="claude_timeout">Timeout (seconds)</label>
+  <input type="number" id="claude_timeout" placeholder="30" min="5" max="300">
+  <p class="hint">Default: 30s</p>
+
+  <button onclick="testClaude()">Test Claude Connection</button>
+  <div id="claude_status" class="status" style="display:none"></div>
+</div>
+
+<div class="section">
+  <h2>Defaults</h2>
+  <label for="default_provider">Default Provider</label>
+  <select id="default_provider">
+    <option value="ollama">Ollama (local)</option>
+    <option value="claude">Claude (cloud)</option>
+  </select>
+  <p class="hint">Used when no provider is selected in the Flow card</p>
+</div>
+
+<button class="save-btn" onclick="saveAll()">Save Settings</button>
+<div id="save_status" class="status" style="display:none"></div>
+
+<script>
+  // Load all settings on page open
+  async function loadSettings() {
+    const fields = ['ollama_url', 'ollama_timeout', 'claude_api_key', 'claude_timeout', 'default_provider'];
+    for (const field of fields) {
+      const value = await Homey.get(field);
+      if (value !== null && value !== undefined) {
+        document.getElementById(field).value = value;
+      }
+    }
+  }
+
+  async function saveAll() {
+    const status = document.getElementById('save_status');
+    status.style.display = 'block';
+    status.className = 'status testing';
+    status.textContent = 'Saving...';
+
+    try {
+      await Homey.set('ollama_url', document.getElementById('ollama_url').value);
+      await Homey.set('ollama_timeout', parseFloat(document.getElementById('ollama_timeout').value) || 120);
+      await Homey.set('claude_api_key', document.getElementById('claude_api_key').value);
+      await Homey.set('claude_timeout', parseFloat(document.getElementById('claude_timeout').value) || 30);
+      await Homey.set('default_provider', document.getElementById('default_provider').value);
+
+      status.className = 'status ok';
+      status.textContent = 'Settings saved!';
+    } catch (err) {
+      status.className = 'status fail';
+      status.textContent = 'Save failed: ' + err.message;
+    }
+  }
+
+  async function testClaude() {
+    const status = document.getElementById('claude_status');
+    status.style.display = 'block';
+    status.className = 'status testing';
+    status.textContent = 'Testing...';
+
+    // Save current API key before testing
+    await Homey.set('claude_api_key', document.getElementById('claude_api_key').value);
+    await Homey.set('claude_timeout', parseFloat(document.getElementById('claude_timeout').value) || 30);
+
+    try {
+      const result = await Homey.api('POST', '/test-claude', {});
+      status.className = result.success ? 'status ok' : 'status fail';
+      status.textContent = result.message;
+    } catch (err) {
+      status.className = 'status fail';
+      status.textContent = 'Test failed: ' + err.message;
+    }
+  }
+
+  async function testOllama() {
+    const status = document.getElementById('ollama_status');
+    status.style.display = 'block';
+    status.className = 'status testing';
+    status.textContent = 'Testing...';
+
+    // Save current URL before testing
+    await Homey.set('ollama_url', document.getElementById('ollama_url').value);
+    await Homey.set('ollama_timeout', parseFloat(document.getElementById('ollama_timeout').value) || 120);
+
+    try {
+      const result = await Homey.api('POST', '/test-ollama', {});
+      status.className = result.success ? 'status ok' : 'status fail';
+      status.textContent = result.message;
+    } catch (err) {
+      status.className = 'status fail';
+      status.textContent = 'Test failed: ' + err.message;
+    }
+  }
+
+  loadSettings();
+</script>
+</body>
+</html>
