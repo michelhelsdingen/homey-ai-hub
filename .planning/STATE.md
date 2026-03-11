@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: "2026-03-11T21:54:33.893Z"
+last_updated: "2026-03-11T22:29:15.346Z"
 progress:
-  total_phases: 1
+  total_phases: 2
   completed_phases: 1
-  total_plans: 3
-  completed_plans: 3
+  total_plans: 5
+  completed_plans: 4
 ---
 
 # Project State
@@ -18,33 +18,34 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-11)
 
 **Core value:** Users can leverage AI (Claude and Ollama) directly in Homey Flows without being locked into a single provider
-**Current focus:** Phase 1 — Core AI Integration
+**Current focus:** Phase 2 — Conversation Memory and System Prompts
 
 ## Current Position
 
-Phase: 1 of 4 (Core AI Integration)
-Plan: 3 of 3 in current phase (Phase 1 COMPLETE)
-Status: Phase 1 complete — ready for Phase 2
-Last activity: 2026-03-11 — Completed plan 01-03 (Flow card wiring, settings page, API endpoints)
+Phase: 2 of 4 (Conversation Memory and System Prompts)
+Plan: 1 of 2 in current phase (Plan 02-01 COMPLETE)
+Status: Phase 2 in progress — 02-01 done, 02-02 next
+Last activity: 2026-03-11 — Completed plan 02-01 (ConversationStore and Provider System Prompt Support)
 
-Progress: [███░░░░░░░] 25%
+Progress: [████░░░░░░] 40%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 3
-- Average duration: 6 min
-- Total execution time: 18 min
+- Total plans completed: 4
+- Average duration: 5 min
+- Total execution time: 21 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-core-ai-integration | 3 | 18 min | 6 min |
+| 02-conversation-memory-and-system-prompts | 1 | 3 min | 3 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (5 min), 01-02 (5 min), 01-03 (8 min)
-- Trend: Consistent ~6 min/plan
+- Last 5 plans: 01-01 (5 min), 01-02 (5 min), 01-03 (8 min), 02-01 (3 min)
+- Trend: Consistent ~5 min/plan
 
 *Updated after each plan completion*
 
@@ -68,6 +69,9 @@ Recent decisions affecting current work:
 - [01-03]: Provider registry rebuilt on each _get_provider() call — Python ManagerSettings has no .on() event, stale settings prevention requires re-reading on every invocation
 - [01-03]: model_autocomplete returns ArgumentAutocompleteResult dicts (name/description/data) — not plain strings; required by Homey SDK autocomplete contract
 - [01-03]: run_listener extracts model from dict or string — handles both autocomplete dict and plain string inputs robustly
+- [Phase 02]: ConversationStore uses settings injection pattern (no Homey SDK import) — pure-Python testable
+- [Phase 02]: Claude system_prompt as top-level system= kwarg (Anthropic rejects role=system in messages array with HTTP 400)
+- [Phase 02]: conftest.py fixed: settings.set/unset use MagicMock not AsyncMock — Homey ManagerSettings API is synchronous
 
 ### Pending Todos
 
@@ -82,5 +86,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-11
-Stopped at: Completed 01-03-PLAN.md — Flow card wiring, settings page, API endpoints; Phase 1 complete
+Stopped at: Completed 02-01-PLAN.md — ConversationStore and Provider System Prompt Support
 Resume file: None
