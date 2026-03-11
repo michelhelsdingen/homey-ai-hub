@@ -1,0 +1,87 @@
+# Requirements: Homey AI Hub
+
+**Defined:** 2026-03-11
+**Core Value:** Users can leverage AI (both local via Ollama and cloud via Claude) directly in their Homey Flows without being locked into a single provider.
+
+## v1 Requirements
+
+### Provider Integration
+
+- [ ] **PROV-01**: User can configure Ollama connection via IP address and port in settings
+- [ ] **PROV-02**: User can configure Claude API key in settings
+- [ ] **PROV-03**: User can select a model per provider (Ollama: from installed models, Claude: Haiku/Sonnet/Opus)
+- [ ] **PROV-04**: User can set a default provider (Ollama or Claude) in settings
+- [ ] **PROV-05**: User can test connection to Ollama and Claude from settings page
+- [ ] **PROV-06**: User can see dynamically fetched model list from Ollama API via autocomplete
+
+### Flow Cards
+
+- [ ] **FLOW-01**: User can send a text prompt to selected provider via Flow action card and receive AI response as token
+- [ ] **FLOW-02**: User can send a prompt with image to a vision-capable model via Flow action card
+- [ ] **FLOW-03**: User can set system prompt dynamically per flow via action card
+- [ ] **FLOW-04**: User can use named conversation sessions for isolated multi-turn context
+- [ ] **FLOW-05**: User can clear a conversation session via Flow action card
+
+### Settings & Configuration
+
+- [ ] **CONF-01**: User can configure timeout per provider (default: 30s Claude, 120s Ollama)
+- [ ] **CONF-02**: User can set a global system prompt in settings
+- [ ] **CONF-03**: User can configure max conversation history length (sliding window)
+
+## v2 Requirements
+
+### Additional Providers
+
+- **PROV-V2-01**: User can connect OpenAI/GPT models
+- **PROV-V2-02**: User can connect Google Gemini models
+- **PROV-V2-03**: User can connect any OpenAI-compatible API endpoint
+
+### Smart Home Control
+
+- **CTRL-V2-01**: User can control Homey devices via natural language through AI
+- **CTRL-V2-02**: AI can query device status and respond with current state
+- **CTRL-V2-03**: AI can trigger existing Homey Flows
+
+### Advanced Features
+
+- **ADV-V2-01**: User can receive streaming/partial responses
+- **ADV-V2-02**: User can define custom tools the AI can call
+- **ADV-V2-03**: Telegram bot integration for remote AI queries
+
+## Out of Scope
+
+| Feature | Reason |
+|---------|--------|
+| MCP server on Homey | AI Chat Control app already does this well |
+| Voice assistant pipeline | Platform-level concern, not an app feature |
+| Device pairing/driver | No physical devices — this is a service app |
+| OpenAI/Gemini in v1 | Keep v1 focused on Claude + Ollama, add providers later |
+| Real-time streaming to Flow | Homey Flow tokens don't support streaming |
+
+## Traceability
+
+| Requirement | Phase | Status |
+|-------------|-------|--------|
+| PROV-01 | — | Pending |
+| PROV-02 | — | Pending |
+| PROV-03 | — | Pending |
+| PROV-04 | — | Pending |
+| PROV-05 | — | Pending |
+| PROV-06 | — | Pending |
+| FLOW-01 | — | Pending |
+| FLOW-02 | — | Pending |
+| FLOW-03 | — | Pending |
+| FLOW-04 | — | Pending |
+| FLOW-05 | — | Pending |
+| CONF-01 | — | Pending |
+| CONF-02 | — | Pending |
+| CONF-03 | — | Pending |
+
+**Coverage:**
+- v1 requirements: 14 total
+- Mapped to phases: 0
+- Unmapped: 14 ⚠️
+
+---
+*Requirements defined: 2026-03-11*
+*Last updated: 2026-03-11 after initial definition*
