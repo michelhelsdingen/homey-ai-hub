@@ -8,7 +8,8 @@
     .section { margin-bottom: 24px; padding: 16px; border: 1px solid #e0e0e0; border-radius: 8px; }
     .section h2 { margin: 0 0 12px; font-size: 16px; color: #333; }
     label { display: block; font-size: 13px; color: #555; margin-bottom: 4px; margin-top: 12px; }
-    input, select { width: 100%; padding: 8px 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; box-sizing: border-box; }
+    input, select, textarea { width: 100%; padding: 8px 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; box-sizing: border-box; }
+  textarea { resize: vertical; min-height: 80px; }
     .hint { font-size: 11px; color: #888; margin-top: 2px; }
     button { margin-top: 12px; padding: 8px 16px; background: #1a73e8; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; }
     button:hover { background: #1557b0; }
@@ -60,13 +61,24 @@
   <p class="hint">Used when no provider is selected in the Flow card</p>
 </div>
 
+<div class="section">
+  <h2>Conversation Settings</h2>
+  <label for="global_system_prompt">Global System Prompt</label>
+  <textarea id="global_system_prompt" placeholder="You are a helpful assistant for my smart home. Keep responses brief."></textarea>
+  <p class="hint">Applied to all AI calls unless overridden per card. Leave empty for no system prompt.</p>
+
+  <label for="max_history_turns">Max Conversation History (turns)</label>
+  <input type="number" id="max_history_turns" placeholder="10" min="1" max="50">
+  <p class="hint">Each turn = 1 user message + 1 AI response. Higher values increase API cost and response time for Claude.</p>
+</div>
+
 <button class="save-btn" onclick="saveAll()">Save Settings</button>
 <div id="save_status" class="status" style="display:none"></div>
 
 <script>
   // Load all settings on page open
   async function loadSettings() {
-    const fields = ['ollama_url', 'ollama_timeout', 'claude_api_key', 'claude_timeout', 'default_provider'];
+    const fields = ['ollama_url', 'ollama_timeout', 'claude_api_key', 'claude_timeout', 'default_provider', 'global_system_prompt', 'max_history_turns'];
     for (const field of fields) {
       const value = await Homey.get(field);
       if (value !== null && value !== undefined) {
@@ -87,6 +99,8 @@
       await Homey.set('claude_api_key', document.getElementById('claude_api_key').value);
       await Homey.set('claude_timeout', parseFloat(document.getElementById('claude_timeout').value) || 30);
       await Homey.set('default_provider', document.getElementById('default_provider').value);
+      await Homey.set('global_system_prompt', document.getElementById('global_system_prompt').value);
+      await Homey.set('max_history_turns', parseInt(document.getElementById('max_history_turns').value) || 10);
 
       status.className = 'status ok';
       status.textContent = 'Settings saved!';
