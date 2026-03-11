@@ -7,12 +7,12 @@
 
 ### Provider Integration
 
-- [ ] **PROV-01**: User can configure Ollama connection via IP address and port in settings
-- [ ] **PROV-02**: User can configure Claude API key in settings
-- [ ] **PROV-03**: User can select a model per provider (Ollama: from installed models, Claude: Haiku/Sonnet/Opus)
+- [x] **PROV-01**: User can configure Ollama connection via IP address and port in settings
+- [x] **PROV-02**: User can configure Claude API key in settings
+- [x] **PROV-03**: User can select a model per provider (Ollama: from installed models, Claude: Haiku/Sonnet/Opus)
 - [ ] **PROV-04**: User can set a default provider (Ollama or Claude) in settings
-- [ ] **PROV-05**: User can test connection to Ollama and Claude from settings page
-- [ ] **PROV-06**: User can see dynamically fetched model list from Ollama API via autocomplete
+- [x] **PROV-05**: User can test connection to Ollama and Claude from settings page
+- [x] **PROV-06**: User can see dynamically fetched model list from Ollama API via autocomplete
 
 ### Flow Cards
 
@@ -24,7 +24,7 @@
 
 ### Settings & Configuration
 
-- [ ] **CONF-01**: User can configure timeout per provider (default: 30s Claude, 120s Ollama)
+- [x] **CONF-01**: User can configure timeout per provider (default: 30s Claude, 120s Ollama)
 - [ ] **CONF-02**: User can set a global system prompt in settings
 - [ ] **CONF-03**: User can configure max conversation history length (sliding window)
 
@@ -62,18 +62,18 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| PROV-01 | Phase 1 | Pending |
-| PROV-02 | Phase 1 | Pending |
-| PROV-03 | Phase 1 | Pending |
+| PROV-01 | Phase 1 | Complete |
+| PROV-02 | Phase 1 | Complete |
+| PROV-03 | Phase 1 | Complete |
 | PROV-04 | Phase 1 | Pending |
-| PROV-05 | Phase 1 | Pending |
-| PROV-06 | Phase 1 | Pending |
+| PROV-05 | Phase 1 | Complete |
+| PROV-06 | Phase 1 | Complete |
 | FLOW-01 | Phase 1 | Pending |
 | FLOW-02 | Phase 3 | Pending |
 | FLOW-03 | Phase 2 | Pending |
 | FLOW-04 | Phase 2 | Pending |
 | FLOW-05 | Phase 2 | Pending |
-| CONF-01 | Phase 1 | Pending |
+| CONF-01 | Phase 1 | Complete |
 | CONF-02 | Phase 2 | Pending |
 | CONF-03 | Phase 2 | Pending |
 
