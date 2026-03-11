@@ -2,13 +2,13 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: unknown
-last_updated: "2026-03-11T22:29:15.346Z"
+status: active
+last_updated: "2026-03-11T22:35:31.000Z"
 progress:
   total_phases: 2
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 5
-  completed_plans: 4
+  completed_plans: 5
 ---
 
 # Project State
@@ -18,34 +18,34 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-11)
 
 **Core value:** Users can leverage AI (Claude and Ollama) directly in Homey Flows without being locked into a single provider
-**Current focus:** Phase 2 — Conversation Memory and System Prompts
+**Current focus:** Phase 2 COMPLETE — Conversation Memory and System Prompts
 
 ## Current Position
 
-Phase: 2 of 4 (Conversation Memory and System Prompts)
-Plan: 1 of 2 in current phase (Plan 02-01 COMPLETE)
-Status: Phase 2 in progress — 02-01 done, 02-02 next
-Last activity: 2026-03-11 — Completed plan 02-01 (ConversationStore and Provider System Prompt Support)
+Phase: 2 of 4 (Conversation Memory and System Prompts) — COMPLETE
+Plan: 2 of 2 in current phase (Plan 02-02 COMPLETE)
+Status: Phase 2 complete — both 02-01 and 02-02 done
+Last activity: 2026-03-11 — Completed plan 02-02 (Flow Card Wiring — Memory, System Prompts, and Clear Conversation)
 
-Progress: [████░░░░░░] 40%
+Progress: [██████████] 100% (of planned phases 1-2)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 4
+- Total plans completed: 5
 - Average duration: 5 min
-- Total execution time: 21 min
+- Total execution time: 25 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-core-ai-integration | 3 | 18 min | 6 min |
-| 02-conversation-memory-and-system-prompts | 1 | 3 min | 3 min |
+| 02-conversation-memory-and-system-prompts | 2 | 7 min | 3.5 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (5 min), 01-02 (5 min), 01-03 (8 min), 02-01 (3 min)
-- Trend: Consistent ~5 min/plan
+- Last 5 plans: 01-01 (5 min), 01-02 (5 min), 01-03 (8 min), 02-01 (3 min), 02-02 (4 min)
+- Trend: Consistent ~4-5 min/plan
 
 *Updated after each plan completion*
 
@@ -72,6 +72,9 @@ Recent decisions affecting current work:
 - [Phase 02]: ConversationStore uses settings injection pattern (no Homey SDK import) — pure-Python testable
 - [Phase 02]: Claude system_prompt as top-level system= kwarg (Anthropic rejects role=system in messages array with HTTP 400)
 - [Phase 02]: conftest.py fixed: settings.set/unset use MagicMock not AsyncMock — Homey ManagerSettings API is synchronous
+- [02-02]: Backward compat preserved: empty conversation_id skips store entirely, single-turn behavior unchanged
+- [02-02]: System prompt precedence enforced in run_listener: per-card > global_system_prompt setting > None
+- [02-02]: Messages persisted only on success: response.startswith('Error:') check prevents storing failed turns
 
 ### Pending Todos
 
@@ -86,5 +89,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-11
-Stopped at: Completed 02-01-PLAN.md — ConversationStore and Provider System Prompt Support
+Stopped at: Completed 02-02-PLAN.md — Flow Card Wiring: Memory, System Prompts, and Clear Conversation
 Resume file: None

@@ -18,14 +18,14 @@
 
 - [x] **FLOW-01**: User can send a text prompt to selected provider via Flow action card and receive AI response as token
 - [ ] **FLOW-02**: User can send a prompt with image to a vision-capable model via Flow action card
-- [ ] **FLOW-03**: User can set system prompt dynamically per flow via action card
+- [x] **FLOW-03**: User can set system prompt dynamically per flow via action card
 - [x] **FLOW-04**: User can use named conversation sessions for isolated multi-turn context
-- [ ] **FLOW-05**: User can clear a conversation session via Flow action card
+- [x] **FLOW-05**: User can clear a conversation session via Flow action card
 
 ### Settings & Configuration
 
 - [x] **CONF-01**: User can configure timeout per provider (default: 30s Claude, 120s Ollama)
-- [ ] **CONF-02**: User can set a global system prompt in settings
+- [x] **CONF-02**: User can set a global system prompt in settings
 - [x] **CONF-03**: User can configure max conversation history length (sliding window)
 
 ## v2 Requirements
@@ -70,11 +70,11 @@
 | PROV-06 | Phase 1 | Complete |
 | FLOW-01 | Phase 1 | Complete |
 | FLOW-02 | Phase 3 | Pending |
-| FLOW-03 | Phase 2 | Pending |
+| FLOW-03 | Phase 2 | Complete |
 | FLOW-04 | Phase 2 | Complete |
-| FLOW-05 | Phase 2 | Pending |
+| FLOW-05 | Phase 2 | Complete |
 | CONF-01 | Phase 1 | Complete |
-| CONF-02 | Phase 2 | Pending |
+| CONF-02 | Phase 2 | Complete |
 | CONF-03 | Phase 2 | Complete |
 
 **Coverage:**
