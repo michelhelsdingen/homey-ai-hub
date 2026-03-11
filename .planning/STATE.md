@@ -2,13 +2,13 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: unknown
-last_updated: "2026-03-11T22:42:05.504Z"
+status: in_progress
+last_updated: "2026-03-12T00:12:00Z"
 progress:
-  total_phases: 2
+  total_phases: 4
   completed_phases: 2
-  total_plans: 5
-  completed_plans: 5
+  total_plans: 6
+  completed_plans: 6
 ---
 
 # Project State
@@ -18,16 +18,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-11)
 
 **Core value:** Users can leverage AI (Claude and Ollama) directly in Homey Flows without being locked into a single provider
-**Current focus:** Phase 2 COMPLETE — Conversation Memory and System Prompts
+**Current focus:** Phase 3 IN PROGRESS — Vision Support (03-01 complete)
 
 ## Current Position
 
-Phase: 2 of 4 (Conversation Memory and System Prompts) — COMPLETE
-Plan: 2 of 2 in current phase (Plan 02-02 COMPLETE)
-Status: Phase 2 complete — both 02-01 and 02-02 done
-Last activity: 2026-03-11 — Completed plan 02-02 (Flow Card Wiring — Memory, System Prompts, and Clear Conversation)
+Phase: 3 of 4 (Vision Support) — IN PROGRESS
+Plan: 1 of 1+ in current phase (Plan 03-01 COMPLETE)
+Status: 03-01 complete — provider layer and ask_ai_with_image Flow card delivered
+Last activity: 2026-03-12 — Completed plan 03-01 (Provider Layer and Flow Card for Vision Support)
 
-Progress: [██████████] 100% (of planned phases 1-2)
+Progress: [██████████████░░░░░░] 70% (phases 1-2 complete + 03-01 complete)
 
 ## Performance Metrics
 
@@ -42,10 +42,11 @@ Progress: [██████████] 100% (of planned phases 1-2)
 |-------|-------|-------|----------|
 | 01-core-ai-integration | 3 | 18 min | 6 min |
 | 02-conversation-memory-and-system-prompts | 2 | 7 min | 3.5 min |
+| 03-vision-support | 1 | 12 min | 12 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (5 min), 01-02 (5 min), 01-03 (8 min), 02-01 (3 min), 02-02 (4 min)
-- Trend: Consistent ~4-5 min/plan
+- Last 6 plans: 01-01 (5 min), 01-02 (5 min), 01-03 (8 min), 02-01 (3 min), 02-02 (4 min), 03-01 (12 min)
+- Trend: Consistent ~5-6 min/plan (03-01 slightly longer due to 8 new tests + 2 new provider methods)
 
 *Updated after each plan completion*
 
@@ -75,6 +76,11 @@ Recent decisions affecting current work:
 - [02-02]: Backward compat preserved: empty conversation_id skips store entirely, single-turn behavior unchanged
 - [02-02]: System prompt precedence enforced in run_listener: per-card > global_system_prompt setting > None
 - [02-02]: Messages persisted only on success: response.startswith('Error:') check prevents storing failed turns
+- [03-01]: All Claude models (haiku/sonnet/opus 4-5) support vision — no guard needed for ClaudeProvider.chat_with_image()
+- [03-01]: OllamaProvider uses VISION_MODELS prefix-match set — covers tagged variants (e.g. "llava:13b" starts with "llava")
+- [03-01]: Ollama AsyncClient receives image_bytes directly as images=[bytes] — client handles base64 encoding internally
+- [03-01]: Droptoken stream shape is MEDIUM confidence (JS SDK only) — fallback AttributeError handler + self.log() diagnostics in image_run_listener
+- [03-01]: image/jpg normalised to image/jpeg in both ClaudeProvider and image_run_listener (belt-and-suspenders)
 
 ### Pending Todos
 
@@ -84,10 +90,11 @@ None yet.
 
 - [Phase 1 RESOLVED]: Python autocomplete callback signature confirmed — model_autocomplete(query: str, **card_args) with card_args.get("args", {}).get("provider") pattern works
 - [Phase 1 ACTIVE]: Homey CLI sharp module conflict blocks homey app run/build — must fix sharp before live Docker testing on Homey Pro
-- [Phase 3]: Image droptoken handling in Python SDK not confirmed — documented in JS SDK context only; validate during Phase 3 planning
+- [Phase 1 ACTIVE]: Homey CLI sharp module conflict blocks homey app run/build — must fix sharp before live Docker testing on Homey Pro
+- [Phase 3 ACTIVE]: Image droptoken stream shape unconfirmed in Python SDK — primary pattern implemented with fallback diagnostics; validate on Homey Pro during integration testing
 
 ## Session Continuity
 
-Last session: 2026-03-11
-Stopped at: Completed 02-02-PLAN.md — Flow Card Wiring: Memory, System Prompts, and Clear Conversation
+Last session: 2026-03-12
+Stopped at: Completed 03-01-PLAN.md — Provider Layer and Flow Card for Vision Support
 Resume file: None
