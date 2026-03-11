@@ -10,13 +10,13 @@
 - [x] **PROV-01**: User can configure Ollama connection via IP address and port in settings
 - [x] **PROV-02**: User can configure Claude API key in settings
 - [x] **PROV-03**: User can select a model per provider (Ollama: from installed models, Claude: Haiku/Sonnet/Opus)
-- [ ] **PROV-04**: User can set a default provider (Ollama or Claude) in settings
+- [x] **PROV-04**: User can set a default provider (Ollama or Claude) in settings
 - [x] **PROV-05**: User can test connection to Ollama and Claude from settings page
 - [x] **PROV-06**: User can see dynamically fetched model list from Ollama API via autocomplete
 
 ### Flow Cards
 
-- [ ] **FLOW-01**: User can send a text prompt to selected provider via Flow action card and receive AI response as token
+- [x] **FLOW-01**: User can send a text prompt to selected provider via Flow action card and receive AI response as token
 - [ ] **FLOW-02**: User can send a prompt with image to a vision-capable model via Flow action card
 - [ ] **FLOW-03**: User can set system prompt dynamically per flow via action card
 - [ ] **FLOW-04**: User can use named conversation sessions for isolated multi-turn context
@@ -65,10 +65,10 @@
 | PROV-01 | Phase 1 | Complete |
 | PROV-02 | Phase 1 | Complete |
 | PROV-03 | Phase 1 | Complete |
-| PROV-04 | Phase 1 | Pending |
+| PROV-04 | Phase 1 | Complete |
 | PROV-05 | Phase 1 | Complete |
 | PROV-06 | Phase 1 | Complete |
-| FLOW-01 | Phase 1 | Pending |
+| FLOW-01 | Phase 1 | Complete |
 | FLOW-02 | Phase 3 | Pending |
 | FLOW-03 | Phase 2 | Pending |
 | FLOW-04 | Phase 2 | Pending |
@@ -84,4 +84,4 @@
 
 ---
 *Requirements defined: 2026-03-11*
-*Last updated: 2026-03-11 after roadmap creation — all 14 requirements mapped*
+*Last updated: 2026-03-11 after plan 01-03 — Phase 1 complete, 8 requirements satisfied*

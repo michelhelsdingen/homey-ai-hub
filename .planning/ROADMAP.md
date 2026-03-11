@@ -12,7 +12,7 @@ Build a Homey Pro Python app that exposes Claude and Ollama as Flow action cards
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Core AI Integration** - Working Homey app with ask_ai Flow card routing to Claude or Ollama, model selection, settings, and connection validation
+- [x] **Phase 1: Core AI Integration** - Working Homey app with ask_ai Flow card routing to Claude or Ollama, model selection, settings, and connection validation
 - [ ] **Phase 2: Conversation Memory and System Prompts** - Named conversation sessions with persistent history, sliding window, clear card, and system prompt configuration
 - [ ] **Phase 3: Vision Support** - Image-capable Flow card for vision models (Ollama qwen2.5vl, Claude 3+)
 - [ ] **Phase 4: App Store Polish** - Submission-ready app with compliant card titles, localization, icon, and security audit
@@ -32,9 +32,9 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: TBD
 
 Plans:
-- [ ] 01-01: Project scaffold, provider abstraction, and async foundation
-- [ ] 01-02: Ollama and Claude provider implementations with unit tests
-- [ ] 01-03: Flow card wiring, settings page, and Docker integration test
+- [x] 01-01: Project scaffold, provider abstraction, and async foundation
+- [x] 01-02: Ollama and Claude provider implementations with unit tests
+- [x] 01-03: Flow card wiring, settings page, and Docker integration test
 
 ### Phase 2: Conversation Memory and System Prompts
 **Goal**: Users can have multi-turn AI conversations in Flows using named session IDs, with full system prompt control
@@ -85,7 +85,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Core AI Integration | 2/3 | In Progress|  |
+| 1. Core AI Integration | 3/3 | Complete | 2026-03-11 |
 | 2. Conversation Memory and System Prompts | 0/2 | Not started | - |
 | 3. Vision Support | 0/1 | Not started | - |
 | 4. App Store Polish | 0/1 | Not started | - |

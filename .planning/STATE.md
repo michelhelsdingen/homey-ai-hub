@@ -10,28 +10,28 @@ See: .planning/PROJECT.md (updated 2026-03-11)
 ## Current Position
 
 Phase: 1 of 4 (Core AI Integration)
-Plan: 2 of 3 in current phase
-Status: In progress
-Last activity: 2026-03-11 — Completed plan 01-02 (ClaudeProvider + OllamaProvider + unit tests)
+Plan: 3 of 3 in current phase (Phase 1 COMPLETE)
+Status: Phase 1 complete — ready for Phase 2
+Last activity: 2026-03-11 — Completed plan 01-03 (Flow card wiring, settings page, API endpoints)
 
-Progress: [██░░░░░░░░] 17%
+Progress: [███░░░░░░░] 25%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 2
-- Average duration: 5 min
-- Total execution time: 10 min
+- Total plans completed: 3
+- Average duration: 6 min
+- Total execution time: 18 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 01-core-ai-integration | 2 | 10 min | 5 min |
+| 01-core-ai-integration | 3 | 18 min | 6 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (5 min), 01-02 (5 min)
-- Trend: Consistent 5 min/plan
+- Last 5 plans: 01-01 (5 min), 01-02 (5 min), 01-03 (8 min)
+- Trend: Consistent ~6 min/plan
 
 *Updated after each plan completion*
 
@@ -52,6 +52,9 @@ Recent decisions affecting current work:
 - [01-02]: ClaudeProvider uses AsyncAnthropic with max_retries=0 — prevents 10-20s hang on Claude API errors in Homey Flow context
 - [01-02]: OllamaProvider file named ollama_provider.py (not ollama.py) — naming it ollama.py would shadow the ollama library
 - [01-02]: Homey CLI dependency install broken (sharp conflict) — using requirements.txt as workaround for Homey Python app dependencies
+- [01-03]: Provider registry rebuilt on each _get_provider() call — Python ManagerSettings has no .on() event, stale settings prevention requires re-reading on every invocation
+- [01-03]: model_autocomplete returns ArgumentAutocompleteResult dicts (name/description/data) — not plain strings; required by Homey SDK autocomplete contract
+- [01-03]: run_listener extracts model from dict or string — handles both autocomplete dict and plain string inputs robustly
 
 ### Pending Todos
 
@@ -59,11 +62,12 @@ None yet.
 
 ### Blockers/Concerns
 
-- [Phase 1]: Python autocomplete callback signature for Homey Flow cards not confirmed with running code example — resolve during Phase 1 planning (check Homey developer forum or SDK source)
+- [Phase 1 RESOLVED]: Python autocomplete callback signature confirmed — model_autocomplete(query: str, **card_args) with card_args.get("args", {}).get("provider") pattern works
+- [Phase 1 ACTIVE]: Homey CLI sharp module conflict blocks homey app run/build — must fix sharp before live Docker testing on Homey Pro
 - [Phase 3]: Image droptoken handling in Python SDK not confirmed — documented in JS SDK context only; validate during Phase 3 planning
 
 ## Session Continuity
 
 Last session: 2026-03-11
-Stopped at: Completed 01-02-PLAN.md — ClaudeProvider, OllamaProvider, and unit tests complete
+Stopped at: Completed 01-03-PLAN.md — Flow card wiring, settings page, API endpoints; Phase 1 complete
 Resume file: None
