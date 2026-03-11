@@ -30,9 +30,12 @@ class OllamaProvider(LLMProvider):
         messages: list[dict],
         model: str,
         timeout: float | None = None,
+        system_prompt: str | None = None,
     ) -> str:
         """Send messages to Ollama and return the response text."""
         try:
+            if system_prompt:
+                messages = [{"role": "system", "content": system_prompt}] + list(messages)
             response = await self._client.chat(
                 model=model,
                 messages=messages,

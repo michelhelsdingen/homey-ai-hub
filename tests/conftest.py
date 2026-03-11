@@ -9,8 +9,8 @@ def mock_homey():
     homey = MagicMock()
     homey.settings = MagicMock()
     homey.settings.get = MagicMock(return_value=None)
-    homey.settings.set = AsyncMock()
-    homey.settings.unset = AsyncMock()
+    homey.settings.set = MagicMock()
+    homey.settings.unset = MagicMock()
     homey.flow = MagicMock()
     homey.flow.get_action_card = MagicMock()
     return homey

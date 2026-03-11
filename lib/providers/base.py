@@ -15,6 +15,7 @@ class LLMProvider(ABC):
         messages: list[dict],
         model: str,
         timeout: float | None = None,
+        system_prompt: str | None = None,
     ) -> str:
         """Send messages to the AI and return the assistant response text.
 
@@ -24,6 +25,9 @@ class LLMProvider(ABC):
             model: Model ID string (provider-specific)
             timeout: Optional per-call timeout override in seconds.
                 If None, use the provider's default timeout.
+            system_prompt: Optional system instruction string. How this is
+                passed to the model is provider-specific (e.g. top-level
+                ``system=`` kwarg for Claude, prepended system message for Ollama).
 
         Returns:
             Assistant response as plain text string.

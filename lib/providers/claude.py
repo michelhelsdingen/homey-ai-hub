@@ -35,14 +35,14 @@ class ClaudeProvider(LLMProvider):
         messages: list[dict],
         model: str,
         timeout: float | None = None,
+        system_prompt: str | None = None,
     ) -> str:
         """Send messages to Claude and return the response text."""
         try:
-            response = await self._client.messages.create(
-                model=model,
-                max_tokens=1024,
-                messages=messages,
-            )
+            kwargs: dict = dict(model=model, max_tokens=1024, messages=messages)
+            if system_prompt:
+                kwargs["system"] = system_prompt  # top-level param — NOT in messages array
+            response = await self._client.messages.create(**kwargs)
             return response.content[0].text
         except RateLimitError:
             return "Error: Claude rate limited. Please wait 30 seconds and retry."
