@@ -59,10 +59,10 @@ Plans:
 **Success Criteria** (what must be TRUE):
   1. User can use the ask_ai_with_image Flow action card, attach an image droptoken, and receive a text response that reflects the image content
   2. Sending an image to a non-vision model returns a clear error token explaining the model does not support vision
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] 03-01: Image droptoken handling and vision provider implementations
+- [ ] 03-01-PLAN.md — Provider vision layer (chat_with_image ABC + Claude/Ollama implementations + tests) and ask_ai_with_image Flow card wiring
 
 ### Phase 4: App Store Polish
 **Goal**: The app passes Homey App Store review and is safe to submit publicly
