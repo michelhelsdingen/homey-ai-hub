@@ -164,5 +164,75 @@ class App(homey_app.App):
 
         clear_card.register_run_listener(clear_run_listener)
 
+        image_card = self.homey.flow.get_action_card("ask_ai_with_image")
+
+        async def image_run_listener(args: dict, **kwargs) -> dict:
+            # Guard: droptoken is nullable — user may not have connected an image token
+            droptoken = args.get("droptoken")
+            if droptoken is None:
+                return {"response": "Error: No image provided. Connect an image token to this card."}
+
+            provider_name = args.get("provider")
+            provider, name = self._get_provider(provider_name)
+            if not provider:
+                return {
+                    "response": (
+                        f"Error: Provider '{name}' not configured. "
+                        "Check Settings > Homey AI Hub."
+                    )
+                }
+
+            prompt = args.get("prompt", "").strip()
+            if not prompt:
+                return {"response": "Error: No prompt provided."}
+
+            # Extract model (handles autocomplete dict or plain string — same pattern as ask_ai)
+            model_arg = args.get("model")
+            if isinstance(model_arg, dict):
+                model = model_arg.get("name") or model_arg.get("id") or ""
+            else:
+                model = str(model_arg) if model_arg else ""
+
+            if not model:
+                models = await provider.list_models()
+                model = models[0] if models else ""
+
+            if not model:
+                return {"response": f"Error: No model selected and no models available for {name}."}
+
+            # Read image from Homey droptoken
+            # MEDIUM confidence: exact Python SDK shape — primary pattern based on SDK docs
+            # If this fails with AttributeError, inspect: self.log(f"droptoken attrs: {dir(droptoken)}")
+            try:
+                image_stream = await droptoken.get_stream()
+                # Expected shape: {"meta": {"contentType": str, "filename": str}, "data": <BytesIO-like>}
+                image_bytes = image_stream["data"].read()
+                media_type = (image_stream.get("meta") or {}).get("contentType") or "image/jpeg"
+            except (TypeError, KeyError, AttributeError) as e:
+                # Fallback: stream may be returned as a different object shape
+                self.log(f"ask_ai_with_image: droptoken shape unexpected: {type(image_stream)}, attrs: {dir(image_stream)}, error: {e}")
+                return {"response": f"Error: Could not read image from droptoken: {e}. Check app logs for droptoken shape."}
+
+            # Normalize MIME type: Anthropic rejects "image/jpg" — must be "image/jpeg"
+            if media_type == "image/jpg":
+                media_type = "image/jpeg"
+
+            self.log(
+                f"ask_ai_with_image: provider={name}, model={model}, "
+                f"media_type={media_type}, image_size={len(image_bytes)}, prompt_len={len(prompt)}"
+            )
+
+            response = await provider.chat_with_image(
+                prompt=prompt,
+                image_bytes=image_bytes,
+                media_type=media_type,
+                model=model,
+            )
+            return {"response": response}
+
+        image_card.register_run_listener(image_run_listener)
+        # Reuse existing model_autocomplete — same provider/model logic works for vision card
+        image_card.register_argument_autocomplete_listener("model", model_autocomplete)
+
 
 homey_export = App
