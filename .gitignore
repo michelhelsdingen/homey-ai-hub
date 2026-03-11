@@ -40,3 +40,6 @@ app.json
 # OS
 .DS_Store
 Thumbs.db
+
+# Homey environment variables (contains secrets — never commit)
+env.json

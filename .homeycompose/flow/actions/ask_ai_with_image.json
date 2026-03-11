@@ -1,7 +1,7 @@
 {
   "id": "ask_ai_with_image",
   "title": { "en": "Ask AI about image" },
-  "titleFormatted": { "en": "Ask [[provider]] AI ([[model]]) about image: [[prompt]]" },
+  "titleFormatted": { "en": "Ask [[provider]] AI with [[model]] about image: [[prompt]]" },
   "droptoken": ["image"],
   "args": [
     {

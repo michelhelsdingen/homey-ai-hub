@@ -11,5 +11,10 @@
   "test_ollama_button": "Test Ollama Connection",
   "connection_testing": "Testing...",
   "connection_ok": "Connected",
-  "connection_failed": "Connection failed"
+  "connection_failed": "Connection failed",
+  "setting_global_system_prompt": "Global System Prompt",
+  "setting_global_system_prompt_hint": "Applied to all AI calls unless overridden per card",
+  "setting_max_history_turns": "Max Conversation History (turns)",
+  "setting_max_history_turns_hint": "Older turns are removed when limit is reached",
+  "conversation_settings": "Conversation Settings"
 }
