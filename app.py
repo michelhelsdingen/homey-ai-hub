@@ -145,7 +145,14 @@ class App(homey_app.App):
         async def model_autocomplete(
             query: str, **card_args
         ) -> list[ArgumentAutocompleteResult]:
-            provider_name = card_args.get("args", {}).get("provider", "ollama")
+            self.log(f"model_autocomplete: query={query!r}, card_args={card_args}")
+            # Provider value may arrive in different shapes depending on SDK version
+            provider_name = (
+                card_args.get("args", {}).get("provider")
+                or card_args.get("provider")
+                or "ollama"
+            )
+            self.log(f"model_autocomplete: resolved provider={provider_name}")
             provider, _ = self._get_provider(provider_name)
 
             if not provider:

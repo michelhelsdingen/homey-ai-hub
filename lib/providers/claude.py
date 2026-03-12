@@ -13,7 +13,13 @@ class ClaudeProvider(LLMProvider):
     Sets max_retries=0 for fast-fail behavior in Flow context.
     """
 
-    MODELS = ["claude-haiku-4-5", "claude-sonnet-4-5", "claude-opus-4-5"]
+    MODELS = [
+        "claude-haiku-4-5",
+        "claude-sonnet-4-5",
+        "claude-sonnet-4-6",
+        "claude-opus-4-5",
+        "claude-opus-4-6",
+    ]
     DEFAULT_TIMEOUT = 30.0
 
     def __init__(self, api_key: str, timeout: float = DEFAULT_TIMEOUT) -> None:
