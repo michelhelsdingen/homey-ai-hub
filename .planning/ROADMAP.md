@@ -76,8 +76,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 04-01-PLAN.md — Manifest compliance (brandColor, runtime, platforms, pythonVersion, version 1.0.0) and asset creation (icon.svg + 3 promo PNGs)
-- [ ] 04-02-PLAN.md — Flow card title fixes, env.json gitignore, locales completion, and list_models() hardening
+- [x] 04-01-PLAN.md — Manifest compliance (brandColor, runtime, platforms, pythonVersion, version 1.0.0) and asset creation (icon.svg + 3 promo PNGs)
+- [x] 04-02-PLAN.md — Flow card title fixes, env.json gitignore, locales completion, and list_models() hardening
 
 ## Progress
 

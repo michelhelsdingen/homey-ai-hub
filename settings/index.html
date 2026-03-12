@@ -3,22 +3,27 @@
 <head>
   <meta charset="utf-8">
   <title>Homey AI Hub Settings</title>
+  <script type="text/javascript" src="/homey.js" data-origin="settings"></script>
   <style>
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; padding: 20px; max-width: 600px; }
     .section { margin-bottom: 24px; padding: 16px; border: 1px solid #e0e0e0; border-radius: 8px; }
     .section h2 { margin: 0 0 12px; font-size: 16px; color: #333; }
     label { display: block; font-size: 13px; color: #555; margin-bottom: 4px; margin-top: 12px; }
     input, select, textarea { width: 100%; padding: 8px 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; box-sizing: border-box; }
-  textarea { resize: vertical; min-height: 80px; }
+    textarea { resize: vertical; min-height: 80px; }
     .hint { font-size: 11px; color: #888; margin-top: 2px; }
     button { margin-top: 12px; padding: 8px 16px; background: #1a73e8; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; }
     button:hover { background: #1557b0; }
-    .status { margin-top: 8px; font-size: 13px; padding: 6px 10px; border-radius: 4px; }
-    .status.ok { background: #e6f4ea; color: #1e8e3e; }
-    .status.fail { background: #fce8e6; color: #d93025; }
-    .status.testing { background: #fef7e0; color: #b06000; }
-    .save-btn { background: #34a853; }
+    button:disabled { background: #ccc; cursor: not-allowed; }
+    .status { margin-top: 8px; font-size: 13px; padding: 6px 10px; border-radius: 4px; display: none; }
+    .status.ok { background: #e6f4ea; color: #1e8e3e; display: block; }
+    .status.fail { background: #fce8e6; color: #d93025; display: block; }
+    .status.testing { background: #fef7e0; color: #b06000; display: block; }
+    .save-btn { background: #34a853; font-size: 15px; padding: 10px 24px; }
     .save-btn:hover { background: #2d8f46; }
+    .test-row { display: flex; align-items: center; gap: 8px; }
+    .test-row button { margin-top: 0; }
+    .test-row .status { margin-top: 0; flex: 1; }
   </style>
 </head>
 <body>
@@ -31,10 +36,12 @@
 
   <label for="ollama_timeout">Timeout (seconds)</label>
   <input type="number" id="ollama_timeout" placeholder="120" min="10" max="600">
-  <p class="hint">Default: 120s — allow extra time for cold model loading</p>
+  <p class="hint">Default: 120s — extra time for cold model loading</p>
 
-  <button onclick="testOllama()">Test Ollama Connection</button>
-  <div id="ollama_status" class="status" style="display:none"></div>
+  <div class="test-row" style="margin-top: 12px;">
+    <button id="btn_test_ollama" onclick="testOllama()">Test Connection</button>
+    <div id="ollama_status" class="status"></div>
+  </div>
 </div>
 
 <div class="section">
@@ -47,8 +54,10 @@
   <input type="number" id="claude_timeout" placeholder="30" min="5" max="300">
   <p class="hint">Default: 30s</p>
 
-  <button onclick="testClaude()">Test Claude Connection</button>
-  <div id="claude_status" class="status" style="display:none"></div>
+  <div class="test-row" style="margin-top: 12px;">
+    <button id="btn_test_claude" onclick="testClaude()">Test Connection</button>
+    <div id="claude_status" class="status"></div>
+  </div>
 </div>
 
 <div class="section">
@@ -69,88 +78,97 @@
 
   <label for="max_history_turns">Max Conversation History (turns)</label>
   <input type="number" id="max_history_turns" placeholder="10" min="1" max="50">
-  <p class="hint">Each turn = 1 user message + 1 AI response. Higher values increase API cost and response time for Claude.</p>
+  <p class="hint">Each turn = 1 user + 1 AI message. Higher values cost more tokens.</p>
 </div>
 
 <button class="save-btn" onclick="saveAll()">Save Settings</button>
-<div id="save_status" class="status" style="display:none"></div>
+<div id="save_status" class="status"></div>
 
 <script>
-  // Load all settings on page open
+  // All settings I/O via API (Homey.set/get broken in Python SDK)
+
   async function loadSettings() {
-    const fields = ['ollama_url', 'ollama_timeout', 'claude_api_key', 'claude_timeout', 'default_provider', 'global_system_prompt', 'max_history_turns'];
-    for (const field of fields) {
-      const value = await Homey.get(field);
-      if (value !== null && value !== undefined) {
-        document.getElementById(field).value = value;
+    try {
+      const s = await Homey.api('GET', '/settings', null);
+      const fields = ['ollama_url', 'ollama_timeout', 'claude_api_key', 'claude_timeout',
+                       'default_provider', 'global_system_prompt', 'max_history_turns'];
+      for (const f of fields) {
+        if (s[f] !== null && s[f] !== undefined) {
+          document.getElementById(f).value = s[f];
+        }
       }
+    } catch (e) {
+      console.error('loadSettings error:', e);
     }
+  }
+
+  function gatherAll() {
+    return {
+      ollama_url: document.getElementById('ollama_url').value,
+      ollama_timeout: parseFloat(document.getElementById('ollama_timeout').value) || 120,
+      claude_api_key: document.getElementById('claude_api_key').value,
+      claude_timeout: parseFloat(document.getElementById('claude_timeout').value) || 30,
+      default_provider: document.getElementById('default_provider').value,
+      global_system_prompt: document.getElementById('global_system_prompt').value,
+      max_history_turns: parseInt(document.getElementById('max_history_turns').value) || 10,
+    };
   }
 
   async function saveAll() {
-    const status = document.getElementById('save_status');
-    status.style.display = 'block';
-    status.className = 'status testing';
-    status.textContent = 'Saving...';
-
+    showStatus('save_status', 'testing', 'Saving...');
     try {
-      await Homey.set('ollama_url', document.getElementById('ollama_url').value);
-      await Homey.set('ollama_timeout', parseFloat(document.getElementById('ollama_timeout').value) || 120);
-      await Homey.set('claude_api_key', document.getElementById('claude_api_key').value);
-      await Homey.set('claude_timeout', parseFloat(document.getElementById('claude_timeout').value) || 30);
-      await Homey.set('default_provider', document.getElementById('default_provider').value);
-      await Homey.set('global_system_prompt', document.getElementById('global_system_prompt').value);
-      await Homey.set('max_history_turns', parseInt(document.getElementById('max_history_turns').value) || 10);
-
-      status.className = 'status ok';
-      status.textContent = 'Settings saved!';
-    } catch (err) {
-      status.className = 'status fail';
-      status.textContent = 'Save failed: ' + err.message;
-    }
-  }
-
-  async function testClaude() {
-    const status = document.getElementById('claude_status');
-    status.style.display = 'block';
-    status.className = 'status testing';
-    status.textContent = 'Testing...';
-
-    // Save current API key before testing
-    await Homey.set('claude_api_key', document.getElementById('claude_api_key').value);
-    await Homey.set('claude_timeout', parseFloat(document.getElementById('claude_timeout').value) || 30);
-
-    try {
-      const result = await Homey.api('POST', '/test-claude', {});
-      status.className = result.success ? 'status ok' : 'status fail';
-      status.textContent = result.message;
-    } catch (err) {
-      status.className = 'status fail';
-      status.textContent = 'Test failed: ' + err.message;
+      const r = await Homey.api('POST', '/save_settings', gatherAll());
+      showStatus('save_status', r.success ? 'ok' : 'fail', r.message);
+    } catch (e) {
+      showStatus('save_status', 'fail', 'Save failed: ' + e.message);
     }
   }
 
   async function testOllama() {
-    const status = document.getElementById('ollama_status');
-    status.style.display = 'block';
-    status.className = 'status testing';
-    status.textContent = 'Testing...';
-
-    // Save current URL before testing
-    await Homey.set('ollama_url', document.getElementById('ollama_url').value);
-    await Homey.set('ollama_timeout', parseFloat(document.getElementById('ollama_timeout').value) || 120);
-
+    const btn = document.getElementById('btn_test_ollama');
+    btn.disabled = true;
+    showStatus('ollama_status', 'testing', 'Saving & testing...');
     try {
-      const result = await Homey.api('POST', '/test-ollama', {});
-      status.className = result.success ? 'status ok' : 'status fail';
-      status.textContent = result.message;
-    } catch (err) {
-      status.className = 'status fail';
-      status.textContent = 'Test failed: ' + err.message;
+      const body = {
+        ollama_url: document.getElementById('ollama_url').value,
+        ollama_timeout: parseFloat(document.getElementById('ollama_timeout').value) || 120,
+      };
+      const r = await Homey.api('POST', '/test_ollama', body);
+      showStatus('ollama_status', r.success ? 'ok' : 'fail', r.message);
+    } catch (e) {
+      showStatus('ollama_status', 'fail', 'Test failed: ' + e.message);
     }
+    btn.disabled = false;
   }
 
-  loadSettings();
+  async function testClaude() {
+    const btn = document.getElementById('btn_test_claude');
+    btn.disabled = true;
+    showStatus('claude_status', 'testing', 'Saving & testing...');
+    try {
+      const body = {
+        claude_api_key: document.getElementById('claude_api_key').value,
+        claude_timeout: parseFloat(document.getElementById('claude_timeout').value) || 30,
+      };
+      const r = await Homey.api('POST', '/test_claude', body);
+      showStatus('claude_status', r.success ? 'ok' : 'fail', r.message);
+    } catch (e) {
+      showStatus('claude_status', 'fail', 'Test failed: ' + e.message);
+    }
+    btn.disabled = false;
+  }
+
+  function showStatus(id, type, msg) {
+    const el = document.getElementById(id);
+    el.className = 'status ' + type;
+    el.textContent = msg;
+  }
+
+  function onHomeyReady(Homey) {
+    window.Homey = Homey;
+    Homey.ready();
+    loadSettings();
+  }
 </script>
 </body>
 </html>

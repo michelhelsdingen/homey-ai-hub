@@ -1,4 +1,10 @@
 """Homey AI Hub — main application entry point."""
+import os
+import sys
+
+# Ensure app directory is in Python path — Homey runtime may not add /app/ to sys.path
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
 from homey import app as homey_app
 from homey.flow_card import ArgumentAutocompleteResult
 

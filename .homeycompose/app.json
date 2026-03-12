@@ -1,7 +1,7 @@
 {
   "id": "com.michelhelsdingen.homey-ai-hub",
   "version": "1.0.0",
-  "compatibility": ">=12.0.0",
+  "compatibility": ">=13.0.0",
   "sdk": 3,
   "runtime": "python",
   "platforms": ["local"],
@@ -10,11 +10,37 @@
   "name": { "en": "Homey AI Hub" },
   "description": { "en": "Use Claude and Ollama AI directly in your Homey Flows." },
   "category": "tools",
-  "permissions": ["homey:manager:flow"],
   "images": {
     "small": "/assets/images/small.png",
     "large": "/assets/images/large.png",
     "xlarge": "/assets/images/xlarge.png"
+  },
+  "pythonPackages": [
+    "anthropic>=0.84.0",
+    "ollama>=0.6.1",
+    "httpx>=0.27.0"
+  ],
+  "api": {
+    "post_save_settings": {
+      "method": "POST",
+      "path": "/save_settings"
+    },
+    "post_test_claude": {
+      "method": "POST",
+      "path": "/test_claude"
+    },
+    "post_test_ollama": {
+      "method": "POST",
+      "path": "/test_ollama"
+    },
+    "get_ping": {
+      "method": "GET",
+      "path": "/ping"
+    },
+    "get_settings": {
+      "method": "GET",
+      "path": "/settings"
+    }
   },
   "author": { "name": "Michel Helsdingen" },
   "source": "https://github.com/michelhelsdingen/homey-ai-hub",

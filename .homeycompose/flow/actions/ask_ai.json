@@ -4,7 +4,7 @@
     "en": "Ask AI"
   },
   "titleFormatted": {
-    "en": "Ask [[provider]] AI with [[model]]: [[prompt]]"
+    "en": "Ask [[provider]] AI with [[model]]: [[prompt]] (conversation: [[conversation_id]], system: [[system_prompt]])"
   },
   "args": [
     {

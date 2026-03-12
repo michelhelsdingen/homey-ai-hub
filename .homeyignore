@@ -1,0 +1,13 @@
+node_modules/
+tests/
+__pycache__/
+.git/
+.planning/
+*.pyc
+.homeybuild/
+.gitignore
+.homeyignore
+pyproject.toml
+package-lock.json
+package.json
+INTEGRATION_TEST_NOTES.md

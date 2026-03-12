@@ -43,3 +43,8 @@ Thumbs.db
 
 # Homey environment variables (contains secrets — never commit)
 env.json
+node_modules/
+
+
+# Added by Homey CLI
+/.homeybuild/
