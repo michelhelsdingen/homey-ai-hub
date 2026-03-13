@@ -1,0 +1,15 @@
+{
+  "id": "ai_image",
+  "title": { "en": "Analyze image with AI" },
+  "titleFormatted": { "en": "AI: analyze [[droptoken]] — [[prompt]]" },
+  "droptoken": ["image"],
+  "hint": { "en": "Send an image to AI for analysis. Uses your default provider." },
+  "args": [
+    {
+      "type": "text",
+      "name": "prompt",
+      "title": { "en": "Prompt" },
+      "placeholder": { "en": "What do you see in this image?" }
+    }
+  ]
+}

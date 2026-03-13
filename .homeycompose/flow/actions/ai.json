@@ -1,0 +1,28 @@
+{
+  "id": "ai",
+  "title": { "en": "Ask or command AI" },
+  "titleFormatted": { "en": "AI: [[prompt]] · [[conversation_id]] · [[system_prompt]]" },
+  "hint": { "en": "Ask a question or give a command. AI answers or controls your devices automatically." },
+  "args": [
+    {
+      "type": "text",
+      "name": "prompt",
+      "title": { "en": "Prompt" },
+      "placeholder": { "en": "Turn off the lights / What's the weather?" }
+    },
+    {
+      "type": "text",
+      "name": "conversation_id",
+      "title": { "en": "Conversation ID" },
+      "placeholder": { "en": "Leave empty for single-turn" },
+      "required": false
+    },
+    {
+      "type": "text",
+      "name": "system_prompt",
+      "title": { "en": "Extra instructions" },
+      "placeholder": { "en": "Always respond in Dutch" },
+      "required": false
+    }
+  ]
+}

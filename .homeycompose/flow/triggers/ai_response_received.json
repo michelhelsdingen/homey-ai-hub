@@ -1,0 +1,31 @@
+{
+  "id": "ai_response_received",
+  "title": { "en": "AI has responded" },
+  "titleFormatted": { "en": "AI has responded" },
+  "tokens": [
+    {
+      "name": "response",
+      "type": "string",
+      "title": { "en": "AI Response" },
+      "example": { "en": "The weather today is 15°C and partly cloudy." }
+    },
+    {
+      "name": "provider",
+      "type": "string",
+      "title": { "en": "Provider" },
+      "example": { "en": "claude" }
+    },
+    {
+      "name": "model",
+      "type": "string",
+      "title": { "en": "Model" },
+      "example": { "en": "claude-haiku-4-5" }
+    },
+    {
+      "name": "prompt",
+      "type": "string",
+      "title": { "en": "Original Prompt" },
+      "example": { "en": "What is the weather like today?" }
+    }
+  ]
+}

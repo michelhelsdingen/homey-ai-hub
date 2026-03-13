@@ -1,0 +1,19 @@
+{
+  "id": "webhook_received",
+  "title": { "en": "AI webhook received" },
+  "titleFormatted": { "en": "AI webhook received" },
+  "tokens": [
+    {
+      "name": "message",
+      "type": "string",
+      "title": { "en": "Message" },
+      "example": { "en": "Turn off the lights in the living room" }
+    },
+    {
+      "name": "flag",
+      "type": "string",
+      "title": { "en": "Flag" },
+      "example": { "en": "voice-command" }
+    }
+  ]
+}

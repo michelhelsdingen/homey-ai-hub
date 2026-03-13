@@ -1,7 +1,7 @@
 """Ollama local model provider implementation."""
 from ollama import AsyncClient, ResponseError
 
-from lib.providers.base import LLMProvider
+from lib.providers.base import LLMProvider, ToolCall, ToolRoundResult
 
 
 class OllamaProvider(LLMProvider):
@@ -78,6 +78,46 @@ class OllamaProvider(LLMProvider):
             return f"Error: Cannot reach Ollama at {self._host}: {e}"
         except Exception as e:
             return f"Error: Unexpected Ollama error: {e}"
+
+    async def chat_with_tools_round(
+        self,
+        messages: list[dict],
+        model: str,
+        tools: list[dict],
+        system_prompt: str | None = None,
+    ) -> ToolRoundResult:
+        """Single round of Ollama tool-use chat."""
+        ollama_tools = [
+            {"type": "function", "function": {"name": t["name"], "description": t["description"], "parameters": t["parameters"]}}
+            for t in tools
+        ]
+        msgs = list(messages)
+        if system_prompt:
+            msgs.insert(0, {"role": "system", "content": system_prompt})
+
+        try:
+            response = await self._client.chat(model=model, messages=msgs, tools=ollama_tools)
+        except ResponseError as e:
+            return ToolRoundResult(text=f"Error: Ollama error: {e}")
+        except (ConnectionError, OSError) as e:
+            return ToolRoundResult(text=f"Error: Cannot reach Ollama: {e}")
+
+        if response.message.tool_calls:
+            tool_calls = []
+            for tc in response.message.tool_calls:
+                tool_calls.append(ToolCall(
+                    id=tc.function.name,  # Ollama has no tool_call_id
+                    name=tc.function.name,
+                    arguments=tc.function.arguments,  # Already a dict in Ollama
+                ))
+            raw = [{"role": "assistant", "content": response.message.content or "", "tool_calls": [{"function": {"name": tc.function.name, "arguments": tc.function.arguments}} for tc in response.message.tool_calls]}]
+            return ToolRoundResult(text=None, tool_calls=tool_calls, raw_messages=raw)
+
+        return ToolRoundResult(text=response.message.content or "")
+
+    def format_tool_result(self, tool_call_id: str, tool_name: str, result: str) -> list[dict]:
+        """Format tool result for Ollama."""
+        return [{"role": "tool", "content": result}]
 
     async def list_models(self) -> list[str]:
         """Return currently installed Ollama model names.

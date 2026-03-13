@@ -1,0 +1,44 @@
+{
+  "id": "ai_custom",
+  "title": { "en": "Ask or command AI (custom)" },
+  "titleFormatted": { "en": "AI [[provider]]/[[model]]: [[prompt]] · [[conversation_id]] · [[system_prompt]]" },
+  "hint": { "en": "Same as AI card but with a specific provider and model." },
+  "args": [
+    {
+      "type": "dropdown",
+      "name": "provider",
+      "title": { "en": "Provider" },
+      "values": [
+        { "id": "ollama", "label": { "en": "Ollama (local)" } },
+        { "id": "claude", "label": { "en": "Claude" } },
+        { "id": "openai", "label": { "en": "OpenAI" } }
+      ]
+    },
+    {
+      "type": "autocomplete",
+      "name": "model",
+      "title": { "en": "Model" },
+      "placeholder": { "en": "Select model..." }
+    },
+    {
+      "type": "text",
+      "name": "prompt",
+      "title": { "en": "Prompt" },
+      "placeholder": { "en": "Turn off the lights / What's the weather?" }
+    },
+    {
+      "type": "text",
+      "name": "conversation_id",
+      "title": { "en": "Conversation ID" },
+      "placeholder": { "en": "Leave empty for single-turn" },
+      "required": false
+    },
+    {
+      "type": "text",
+      "name": "system_prompt",
+      "title": { "en": "Extra instructions" },
+      "placeholder": { "en": "Always respond in Dutch" },
+      "required": false
+    }
+  ]
+}

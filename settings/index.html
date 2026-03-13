@@ -38,6 +38,10 @@
   <input type="number" id="ollama_timeout" placeholder="120" min="10" max="600">
   <p class="hint">Default: 120s — extra time for cold model loading</p>
 
+  <label for="default_model_ollama">Default Model</label>
+  <input type="text" id="default_model_ollama" placeholder="llama3.1">
+  <p class="hint">Default model for simple AI cards (leave empty for auto-detect)</p>
+
   <div class="test-row" style="margin-top: 12px;">
     <button id="btn_test_ollama" onclick="testOllama()">Test Connection</button>
     <div id="ollama_status" class="status"></div>
@@ -54,9 +58,33 @@
   <input type="number" id="claude_timeout" placeholder="30" min="5" max="300">
   <p class="hint">Default: 30s</p>
 
+  <label for="default_model_claude">Default Model</label>
+  <input type="text" id="default_model_claude" placeholder="claude-sonnet-4-6">
+  <p class="hint">Default model for simple AI cards</p>
+
   <div class="test-row" style="margin-top: 12px;">
     <button id="btn_test_claude" onclick="testClaude()">Test Connection</button>
     <div id="claude_status" class="status"></div>
+  </div>
+</div>
+
+<div class="section">
+  <h2>OpenAI</h2>
+  <label for="openai_api_key">API Key</label>
+  <input type="password" id="openai_api_key" placeholder="sk-...">
+  <p class="hint">Get your key at platform.openai.com</p>
+
+  <label for="openai_timeout">Timeout (seconds)</label>
+  <input type="number" id="openai_timeout" placeholder="30" min="5" max="300">
+  <p class="hint">Default: 30s</p>
+
+  <label for="default_model_openai">Default Model</label>
+  <input type="text" id="default_model_openai" placeholder="gpt-4o-mini">
+  <p class="hint">Default model for simple AI cards</p>
+
+  <div class="test-row" style="margin-top: 12px;">
+    <button id="btn_test_openai" onclick="testOpenAI()">Test Connection</button>
+    <div id="openai_status" class="status"></div>
   </div>
 </div>
 
@@ -66,8 +94,22 @@
   <select id="default_provider">
     <option value="ollama">Ollama (local)</option>
     <option value="claude">Claude (cloud)</option>
+    <option value="openai">OpenAI (cloud)</option>
   </select>
   <p class="hint">Used when no provider is selected in the Flow card</p>
+</div>
+
+<div class="section">
+  <h2>Fallback</h2>
+  <label style="display: flex; align-items: center; gap: 8px; margin-top: 0;">
+    <input type="checkbox" id="fallback_enabled" style="width: auto;">
+    Enable provider fallback
+  </label>
+  <p class="hint">If the primary provider fails, automatically try the next configured provider.</p>
+
+  <label for="fallback_order">Provider priority (comma-separated)</label>
+  <input type="text" id="fallback_order" placeholder="claude,openai,ollama">
+  <p class="hint">Order in which providers are tried on failure. Unconfigured providers are skipped.</p>
 </div>
 
 <div class="section">
@@ -84,6 +126,16 @@
 <button class="save-btn" onclick="saveAll()">Save Settings</button>
 <div id="save_status" class="status"></div>
 
+<div class="section">
+  <h2>Card Tests</h2>
+  <p class="hint">Test all AI cards to verify they work correctly with your current settings.</p>
+  <div class="test-row">
+    <button id="btn_run_tests" onclick="runTests()">Run All Tests</button>
+    <div id="tests_status" class="status"></div>
+  </div>
+  <div id="test_results" style="margin-top: 12px; display: none;"></div>
+</div>
+
 <script>
   // All settings I/O via API (Homey.set/get broken in Python SDK)
 
@@ -91,11 +143,18 @@
     try {
       const s = await Homey.api('GET', '/settings', null);
       const fields = ['ollama_url', 'ollama_timeout', 'claude_api_key', 'claude_timeout',
-                       'default_provider', 'global_system_prompt', 'max_history_turns'];
+                       'openai_api_key', 'openai_timeout',
+                       'default_provider', 'default_model_ollama', 'default_model_claude', 'default_model_openai',
+                       'fallback_order',
+                       'global_system_prompt', 'max_history_turns'];
       for (const f of fields) {
         if (s[f] !== null && s[f] !== undefined) {
           document.getElementById(f).value = s[f];
         }
+      }
+      // Checkbox needs special handling
+      if (s.fallback_enabled !== null && s.fallback_enabled !== undefined) {
+        document.getElementById('fallback_enabled').checked = !!s.fallback_enabled;
       }
     } catch (e) {
       console.error('loadSettings error:', e);
@@ -108,7 +167,14 @@
       ollama_timeout: parseFloat(document.getElementById('ollama_timeout').value) || 120,
       claude_api_key: document.getElementById('claude_api_key').value,
       claude_timeout: parseFloat(document.getElementById('claude_timeout').value) || 30,
+      openai_api_key: document.getElementById('openai_api_key').value,
+      openai_timeout: parseFloat(document.getElementById('openai_timeout').value) || 30,
       default_provider: document.getElementById('default_provider').value,
+      default_model_ollama: document.getElementById('default_model_ollama').value,
+      default_model_claude: document.getElementById('default_model_claude').value,
+      default_model_openai: document.getElementById('default_model_openai').value,
+      fallback_enabled: document.getElementById('fallback_enabled').checked,
+      fallback_order: document.getElementById('fallback_order').value,
       global_system_prompt: document.getElementById('global_system_prompt').value,
       max_history_turns: parseInt(document.getElementById('max_history_turns').value) || 10,
     };
@@ -154,6 +220,81 @@
       showStatus('claude_status', r.success ? 'ok' : 'fail', r.message);
     } catch (e) {
       showStatus('claude_status', 'fail', 'Test failed: ' + e.message);
+    }
+    btn.disabled = false;
+  }
+
+  async function testOpenAI() {
+    const btn = document.getElementById('btn_test_openai');
+    btn.disabled = true;
+    showStatus('openai_status', 'testing', 'Saving & testing...');
+    try {
+      const body = {
+        openai_api_key: document.getElementById('openai_api_key').value,
+        openai_timeout: parseFloat(document.getElementById('openai_timeout').value) || 30,
+      };
+      const r = await Homey.api('POST', '/test_openai', body);
+      showStatus('openai_status', r.success ? 'ok' : 'fail', r.message);
+    } catch (e) {
+      showStatus('openai_status', 'fail', 'Test failed: ' + e.message);
+    }
+    btn.disabled = false;
+  }
+
+  async function runTests() {
+    const btn = document.getElementById('btn_run_tests');
+    const resultsDiv = document.getElementById('test_results');
+    btn.disabled = true;
+    showStatus('tests_status', 'testing', 'Running tests... (this may take a minute)');
+    resultsDiv.style.display = 'none';
+
+    try {
+      const r = await Homey.api('POST', '/run_tests', {});
+      if (!r) {
+        showStatus('tests_status', 'fail', 'No response — app may still be starting up');
+        btn.disabled = false;
+        return;
+      }
+      showStatus('tests_status', r.success ? 'ok' : 'fail', r.message);
+
+      if (r.results && r.results.length > 0) {
+        resultsDiv.replaceChildren();
+        const wrapper = document.createElement('div');
+        wrapper.style.fontSize = '13px';
+        wrapper.style.marginTop = '8px';
+        for (const t of r.results) {
+          const row = document.createElement('div');
+          row.style.padding = '4px 0';
+          row.style.borderBottom = '1px solid #eee';
+          const icon = t.status === 'pass' ? '\u2705' : '\u274c';
+          const timePart = t.time ? ' (' + t.time + 's)' : '';
+          const title = document.createElement('span');
+          title.textContent = icon + ' ';
+          const strong = document.createElement('strong');
+          strong.textContent = t.test + timePart;
+          title.appendChild(strong);
+          row.appendChild(title);
+          if (t.status === 'fail' && t.error) {
+            const errLine = document.createElement('div');
+            errLine.style.color = '#d93025';
+            errLine.style.fontSize = '12px';
+            errLine.textContent = t.error;
+            row.appendChild(errLine);
+          }
+          if (t.status === 'pass' && t.response) {
+            const respLine = document.createElement('div');
+            respLine.style.color = '#888';
+            respLine.style.fontSize = '12px';
+            respLine.textContent = t.response.substring(0, 100);
+            row.appendChild(respLine);
+          }
+          wrapper.appendChild(row);
+        }
+        resultsDiv.appendChild(wrapper);
+        resultsDiv.style.display = 'block';
+      }
+    } catch (e) {
+      showStatus('tests_status', 'fail', 'Test run failed: ' + e.message);
     }
     btn.disabled = false;
   }

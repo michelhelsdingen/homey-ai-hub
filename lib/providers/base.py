@@ -1,5 +1,22 @@
 """Abstract base class for all LLM providers."""
 from abc import ABC, abstractmethod
+from dataclasses import dataclass, field
+
+
+@dataclass
+class ToolCall:
+    """Normalized tool call from any provider."""
+    id: str
+    name: str
+    arguments: dict
+
+
+@dataclass
+class ToolRoundResult:
+    """Result of a single tool-use chat round."""
+    text: str | None = None
+    tool_calls: list[ToolCall] = field(default_factory=list)
+    raw_messages: list[dict] = field(default_factory=list)
 
 
 class LLMProvider(ABC):
@@ -79,3 +96,29 @@ class LLMProvider(ABC):
             (False, error_message) on failure.
         """
         ...
+
+    async def chat_with_tools_round(
+        self,
+        messages: list[dict],
+        model: str,
+        tools: list[dict],
+        system_prompt: str | None = None,
+    ) -> ToolRoundResult:
+        """Single round of tool-use chat.
+
+        Args:
+            messages: Conversation history (provider-formatted).
+            model: Model ID.
+            tools: Normalized tool definitions:
+                [{"name": str, "description": str, "parameters": {JSON Schema}}]
+            system_prompt: Optional system instruction.
+
+        Returns:
+            ToolRoundResult with either text (done) or tool_calls (needs execution).
+            raw_messages contains provider-formatted messages to append to history.
+        """
+        raise NotImplementedError(f"{type(self).__name__} does not support tool use")
+
+    def format_tool_result(self, tool_call_id: str, tool_name: str, result: str) -> list[dict]:
+        """Format a tool execution result as messages to append to history."""
+        raise NotImplementedError(f"{type(self).__name__} does not support tool use")

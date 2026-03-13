@@ -3,7 +3,7 @@ import base64
 import httpx
 from anthropic import AsyncAnthropic, APIConnectionError, RateLimitError, APIStatusError
 
-from lib.providers.base import LLMProvider
+from lib.providers.base import LLMProvider, ToolCall, ToolRoundResult
 
 
 class ClaudeProvider(LLMProvider):
@@ -99,6 +99,51 @@ class ClaudeProvider(LLMProvider):
             return f"Error: Claude API error {e.status_code}: {e.message}"
         except Exception as e:
             return f"Error: Unexpected Claude error: {e}"
+
+    async def chat_with_tools_round(
+        self,
+        messages: list[dict],
+        model: str,
+        tools: list[dict],
+        system_prompt: str | None = None,
+    ) -> ToolRoundResult:
+        """Single round of Claude tool-use chat."""
+        claude_tools = [
+            {"name": t["name"], "description": t["description"], "input_schema": t["parameters"]}
+            for t in tools
+        ]
+        kwargs: dict = dict(model=model, max_tokens=1024, messages=messages, tools=claude_tools)
+        if system_prompt:
+            kwargs["system"] = system_prompt
+
+        try:
+            response = await self._client.messages.create(**kwargs)
+        except RateLimitError:
+            return ToolRoundResult(text="Error: Claude rate limited. Wait a moment and try again.")
+        except APIConnectionError as e:
+            return ToolRoundResult(text=f"Error: Cannot reach Claude API: {e}")
+        except APIStatusError as e:
+            return ToolRoundResult(text=f"Error: Claude API error {e.status_code}: {e.message}")
+
+        if response.stop_reason == "tool_use":
+            tool_calls = []
+            for block in response.content:
+                if block.type == "tool_use":
+                    tool_calls.append(ToolCall(id=block.id, name=block.name, arguments=block.input))
+            raw = [{"role": "assistant", "content": response.content}]
+            return ToolRoundResult(text=None, tool_calls=tool_calls, raw_messages=raw)
+
+        text = next((b.text for b in response.content if hasattr(b, "text")), "")
+        return ToolRoundResult(text=text)
+
+    def format_tool_result(self, tool_call_id: str, tool_name: str, result: str) -> list[dict]:
+        """Format tool result for Claude (tool_result in user message)."""
+        return [
+            {
+                "role": "user",
+                "content": [{"type": "tool_result", "tool_use_id": tool_call_id, "content": result}],
+            }
+        ]
 
     async def list_models(self) -> list[str]:
         """Return supported Claude models (static list)."""

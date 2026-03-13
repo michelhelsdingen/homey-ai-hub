@@ -9,13 +9,5 @@
       "title": { "en": "Conversation ID" },
       "placeholder": { "en": "my-morning-briefing" }
     }
-  ],
-  "tokens": [
-    {
-      "name": "result",
-      "type": "string",
-      "title": { "en": "Result" },
-      "example": { "en": "Conversation cleared." }
-    }
   ]
 }

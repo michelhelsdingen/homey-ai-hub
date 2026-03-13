@@ -1,0 +1,31 @@
+{
+  "id": "ai_image_custom",
+  "title": { "en": "Analyze image with AI (custom)" },
+  "titleFormatted": { "en": "AI [[provider]]/[[model]]: [[droptoken]] — [[prompt]]" },
+  "droptoken": ["image"],
+  "hint": { "en": "Analyze image with a specific provider and model." },
+  "args": [
+    {
+      "type": "dropdown",
+      "name": "provider",
+      "title": { "en": "Provider" },
+      "values": [
+        { "id": "ollama", "label": { "en": "Ollama (local)" } },
+        { "id": "claude", "label": { "en": "Claude" } },
+        { "id": "openai", "label": { "en": "OpenAI" } }
+      ]
+    },
+    {
+      "type": "autocomplete",
+      "name": "model",
+      "title": { "en": "Model" },
+      "placeholder": { "en": "Select model..." }
+    },
+    {
+      "type": "text",
+      "name": "prompt",
+      "title": { "en": "Prompt" },
+      "placeholder": { "en": "What do you see?" }
+    }
+  ]
+}
