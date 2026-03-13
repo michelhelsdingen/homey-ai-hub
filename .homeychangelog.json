@@ -1,0 +1,5 @@
+{
+  "1.0.0": {
+    "en": "Initial release! Ask AI questions, control smart home devices with natural language, analyze images — all from Homey Flows. Supports Claude, OpenAI, and Ollama."
+  }
+}

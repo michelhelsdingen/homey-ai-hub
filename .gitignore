@@ -27,9 +27,13 @@ htmlcov/
 pyrightconfig.json
 
 # Homey build artifacts
+.homeybuild/
 .build/
 *.zip
 app.json
+
+# Homey cross-compiled venvs (72MB+ binary, rebuild with: npx homey app dependencies install)
+python_packages/
 
 # IDE
 .vscode/
@@ -44,7 +48,3 @@ Thumbs.db
 # Homey environment variables (contains secrets — never commit)
 env.json
 node_modules/
-
-
-# Added by Homey CLI
-/.homeybuild/python_packages/
