@@ -48,3 +48,7 @@ Thumbs.db
 # Homey environment variables (contains secrets — never commit)
 env.json
 node_modules/
+
+# Internal dev docs (not for public repo)
+.planning/
+INTEGRATION_TEST_NOTES.md
